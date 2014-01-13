@@ -906,6 +906,11 @@ bool CDVDPlayer::ReadPacket(DemuxPacket*& packet, CDemuxStream*& stream)
         m_SelectionStreams.Clear(STREAM_NONE, STREAM_SOURCE_DEMUX);
         m_SelectionStreams.Update(m_pInputStream, m_pDemuxer);
         OpenDefaultStreams(false);
+        
+        // load stored channel settings
+        CFileItem currentItem(g_application.CurrentFileItem());
+        if(currentItem.HasPVRChannelInfoTag())
+          g_PVRManager.LoadCurrentChannelSettings();
 
         // reevaluate HasVideo/Audio, we may have switched from/to a radio channel
         if(m_CurrentVideo.id < 0)
@@ -1628,10 +1633,6 @@ void CDVDPlayer::HandlePlaySpeed()
       CLog::Log(LOGDEBUG, "set caching from pvr to done. audio (%d) = %d. video (%d) = %d",
           bGotAudio, m_dvdPlayerAudio.GetLevel(),
           bGotVideo, m_dvdPlayerVideo.GetLevel());
-
-      CFileItem currentItem(g_application.CurrentFileItem());
-      if (currentItem.HasPVRChannelInfoTag())
-        g_PVRManager.LoadCurrentChannelSettings();
 
       caching = CACHESTATE_DONE;
     }
