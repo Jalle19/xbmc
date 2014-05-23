@@ -85,7 +85,7 @@ namespace PVR
 
   typedef boost::shared_ptr<PVR::CPVRChannelGroup> CPVRChannelGroupPtr;
 
-  class CPVRManager : public ISettingCallback, private CThread, public Observable, public ANNOUNCEMENT::IAnnouncer
+  class CPVRManager : public ISettingCallback, private CThread, public Observable, public ANNOUNCEMENT::IAnnouncer, public CJobQueue
   {
     friend class CPVRClients;
 
@@ -511,11 +511,16 @@ namespace PVR
     bool WaitUntilInitialised(void);
     
     /*!
-     * @brief Adds the job to the list of pending jobs unless an identical 
-     * job is already queued
+     * @brief Wrapper for CJobQueue::AddJob(). It checks if the manager has been 
+     * started before queuing the job
      * @param job the job
      */
     void QueueJob(CJob *job);
+    
+    /*!
+     * @brief Callback which is called whenever a queued job has finished processing
+     */
+    virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
     /*!
      * @brief Handle PVR specific cActions
@@ -608,10 +613,6 @@ namespace PVR
      */
     void HideProgressDialog(void);
 
-    void ExecutePendingJobs(void);
-
-    bool IsJobPending(const char *strJobName) const;
-
     ManagerState GetState(void) const;
 
     void SetState(ManagerState state);
@@ -624,9 +625,7 @@ namespace PVR
     CPVRGUIInfo *                   m_guiInfo;                     /*!< pointer to the guiinfo data */
     //@}
 
-    CCriticalSection                m_critSectionTriggers;         /*!< critical section for triggered updates */
     CEvent                          m_triggerEvent;                /*!< triggers an update */
-    std::vector<CJob *>             m_pendingUpdates;              /*!< vector of pending pvr updates */
 
     CFileItem *                     m_currentFile;                 /*!< the PVR file that is currently playing */
     CPVRDatabase *                  m_database;                    /*!< the database for all PVR related data */

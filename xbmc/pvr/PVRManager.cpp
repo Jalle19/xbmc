@@ -304,12 +304,8 @@ void CPVRManager::Cleanup(void)
   m_bOpenPVRWindow = false;
   m_bEpgsCreated = false;
 
-  for (unsigned int iJobPtr = 0; iJobPtr < m_pendingUpdates.size(); iJobPtr++)
-    delete m_pendingUpdates.at(iJobPtr);
-  m_pendingUpdates.clear();
-
+  CancelJobs();
   HideProgressDialog();
-
   SetState(ManagerStateStopped);
 }
 
@@ -333,8 +329,7 @@ void CPVRManager::Start(bool bAsync /* = false */, bool bOpenPVRWindow /* = fals
 {
   if (bAsync)
   {
-    CPVRManagerStartJob *job = new CPVRManagerStartJob(bOpenPVRWindow);
-    CJobManager::GetInstance().AddJob(job, NULL);
+    QueueJob(new CPVRManagerStartJob(bOpenPVRWindow));
     return;
   }
 
@@ -456,16 +451,6 @@ void CPVRManager::Process(void)
       
       /* continue last watched channel */
       ContinueLastChannel();
-    }
-    /* execute the next pending jobs if there are any */
-    try
-    {
-      ExecutePendingJobs();
-    }
-    catch (...)
-    {
-      CLog::Log(LOGERROR, "PVRManager - %s - an error occured while trying to execute the last update job, trying to recover", __FUNCTION__);
-      bRestart = true;
     }
 
     if (!UpgradeOutdatedAddons())
@@ -1263,11 +1248,7 @@ bool CPVRManager::PerformChannelSwitch(const CPVRChannel &channel, bool bPreview
   }
 
   // announce OnStop and OnPlay. yes, this ain't pretty
-  {
-    CSingleLock lock(m_critSectionTriggers);
-    m_pendingUpdates.push_back(new CPVRChannelSwitchJob(previousFile, m_currentFile));
-  }
-  m_triggerEvent.Set();
+  QueueJob(new CPVRChannelSwitchJob(previousFile, m_currentFile));
 
   return bSwitched;
 }
@@ -1385,54 +1366,24 @@ void CPVRManager::SearchMissingChannelIcons(void)
     m_channelGroups->SearchMissingChannelIcons();
 }
 
-bool CPVRManager::IsJobPending(const char *strJobName) const
-{
-  bool bReturn(false);
-  CSingleLock lock(m_critSectionTriggers);
-  for (unsigned int iJobPtr = 0; IsStarted() && iJobPtr < m_pendingUpdates.size(); iJobPtr++)
-  {
-    if (!strcmp(m_pendingUpdates.at(iJobPtr)->GetType(), strJobName))
-    {
-      bReturn = true;
-      break;
-    }
-  }
-
-  return bReturn;
-}
-
 void CPVRManager::QueueJob(CJob *job)
 {
-  CSingleLock lock(m_critSectionTriggers);
-  if (!IsStarted() || IsJobPending(job->GetType()))
+  // ignore if the manager hasn't started yet
+  if (!IsStarted())
   {
     delete job;
     return;
   }
-
-  m_pendingUpdates.push_back(job);
-
-  lock.Leave();
-  m_triggerEvent.Set();
+  
+  AddJob(job);
 }
 
-void CPVRManager::ExecutePendingJobs(void)
+void CPVRManager::OnJobComplete(unsigned int jobID, bool success, CJob *job)
 {
-  CSingleLock lock(m_critSectionTriggers);
+  m_triggerEvent.Set();
 
-  while (m_pendingUpdates.size() > 0)
-  {
-    CJob *job = m_pendingUpdates.at(0);
-    m_pendingUpdates.erase(m_pendingUpdates.begin());
-    lock.Leave();
-
-    job->DoWork();
-    delete job;
-
-    lock.Enter();
-  }
-
-  m_triggerEvent.Reset();
+  if (QueueEmpty())
+    m_triggerEvent.Reset();
 }
 
 bool CPVRManager::OnAction(const CAction &action)
