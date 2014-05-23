@@ -21,11 +21,11 @@
 #ifndef PVRSTARTMANAGERJOB_H
 #define	PVRSTARTMANAGERJOB_H
 
-//#include "pvr/PVRManager.h"
+#include "PVRJob.h"
 
 namespace PVR
 {
-  class CPVRManagerStartJob : public CJob
+  class CPVRManagerStartJob : public CPVRJob
   {
   public:
     CPVRManagerStartJob(bool bOpenPVRWindow = false) :

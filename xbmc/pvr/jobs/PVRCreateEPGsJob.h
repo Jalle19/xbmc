@@ -21,12 +21,12 @@
 #ifndef PVRCREATEEPGSJOB_H
 #define	PVRCREATEEPGSJOB_H
 
-#include "utils/Job.h"
+#include "PVRJob.h"
 #include "pvr/PVRManager.h"
 
 namespace PVR
 {
-class CPVREpgsCreateJob : public CJob
+class CPVREpgsCreateJob : public CPVRJob
 {
 public:
   CPVREpgsCreateJob(void) {}

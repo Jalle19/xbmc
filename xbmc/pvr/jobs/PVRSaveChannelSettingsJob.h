@@ -21,12 +21,12 @@
 #ifndef PVRSAVECHANNELSETTINGSJOB_H
 #define	PVRSAVECHANNELSETTINGSJOB_H
 
-#include "utils/Job.h"
+#include "PVRJob.h"
 #include "pvr/PVRManager.h"
 
 namespace PVR
 {
-class CPVRChannelSettingsSaveJob : public CJob
+class CPVRChannelSettingsSaveJob : public CPVRJob
 {
 public:
   CPVRChannelSettingsSaveJob(void) {}

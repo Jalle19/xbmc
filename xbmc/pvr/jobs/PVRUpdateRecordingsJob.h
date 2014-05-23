@@ -21,13 +21,13 @@
 #ifndef PVRUPDATERECORDINGSJOB_H
 #define	PVRUPDATERECORDINGSJOB_H
 
-#include "utils/Job.h"
+#include "PVRJob.h"
 #include "pvr/PVRManager.h"
 #include "pvr/recordings/PVRRecordings.h"
 
 namespace PVR
 {
-class CPVRRecordingsUpdateJob : public CJob
+class CPVRRecordingsUpdateJob : public CPVRJob
 {
 public:
   CPVRRecordingsUpdateJob(void) {}

@@ -21,14 +21,14 @@
 #ifndef PVRSWITCHCHANNELJOB_H
 #define	PVRSWITCHCHANNELJOB_H
 
-#include "utils/Job.h"
+#include "PVRJob.h"
 #include "FileItem.h"
 #include "interfaces/AnnouncementManager.h"
 #include "pvr/PVRManager.h"
 
 namespace PVR
 {
-class CPVRChannelSwitchJob : public CJob
+class CPVRChannelSwitchJob : public CPVRJob
 {
 public:
   CPVRChannelSwitchJob(CFileItem* previous, CFileItem* next) : m_previous(previous), m_next(next) {}

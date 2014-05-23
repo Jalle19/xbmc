@@ -21,12 +21,12 @@
 #ifndef PVRUPDATECHANNELGROUPSJOB_H
 #define	PVRUPDATECHANNELGROUPSJOB_H
 
-#include "utils/Job.h"
+#include "PVRJob.h"
 #include "pvr/PVRManager.h"
 
 namespace PVR
 {
-class CPVRChannelGroupsUpdateJob : public CJob
+class CPVRChannelGroupsUpdateJob : public CPVRJob
 {
 public:
   CPVRChannelGroupsUpdateJob(void) {}

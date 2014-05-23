@@ -21,13 +21,13 @@
 #ifndef PVRUPDATETIMERSJOB_H
 #define	PVRUPDATETIMERSJOB_H
 
-#include "utils/Job.h"
+#include "PVRJob.h"
 #include "pvr/PVRManager.h"
 #include "pvr/timers/PVRTimers.h"
 
 namespace PVR
 {
-class CPVRTimersUpdateJob : public CJob
+class CPVRTimersUpdateJob : public CPVRJob
 {
 public:
   CPVRTimersUpdateJob(void) {}

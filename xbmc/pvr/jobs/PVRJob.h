@@ -18,27 +18,32 @@
  *
  */
 
-#ifndef PVRSEARCHMISSINGCHANNELICONSJOB_H
-#define	PVRSEARCHMISSINGCHANNELICONSJOB_H
+#ifndef PVRJOB_H
+#define	PVRJOB_H
 
-#include "PVRJob.h"
-#include "pvr/PVRManager.h"
+#include "utils/Job.h"
 
 namespace PVR
 {
-class CPVRSearchMissingChannelIconsJob : public CPVRJob
+class CPVRJob : public CJob
 {
-public:
-  CPVRSearchMissingChannelIconsJob(void) {}
-  virtual ~CPVRSearchMissingChannelIconsJob() {}
-  virtual const char *GetType() const { return "pvr-search-missing-channel-icons"; }
 
-  virtual bool DoWork()
+  /**
+   * PVR related jobs are considered equal if their types match
+   * @param job the job to compare to
+   * @return 
+   */
+  virtual bool operator==(const CJob *job) const
   {
-    g_PVRManager.SearchMissingChannelIcons();
-    return true;
+      return !strcmp(GetType(), job->GetType());
+  }
+
+  virtual bool operator!=(const CJob *job) const
+  {
+      return !(*this == job);
   }
 };
 }
-#endif	/* PVRSEARCHMISSINGCHANNELICONSJOB_H */
+
+#endif	/* PVRJOB_H */
 
