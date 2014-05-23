@@ -327,7 +327,8 @@ void CPVRManager::Start(bool bAsync /* = false */, bool bOpenPVRWindow /* = fals
 {
   if (bAsync)
   {
-    QueueJob(new CPVRStartManagerJob(bOpenPVRWindow));
+    // Add job directly without checking if the manager is started
+    AddJob(new CPVRStartManagerJob(bOpenPVRWindow));
     return;
   }
 
