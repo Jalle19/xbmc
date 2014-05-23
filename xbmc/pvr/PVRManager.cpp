@@ -41,7 +41,6 @@
 #include "utils/StringUtils.h"
 #include "threads/Atomics.h"
 #include "windows/GUIWindowPVRCommon.h"
-#include "utils/JobManager.h"
 #include "interfaces/AnnouncementManager.h"
 
 #include "PVRManager.h"
@@ -54,7 +53,6 @@
 #include "epg/EpgContainer.h"
 #include "recordings/PVRRecordings.h"
 #include "timers/PVRTimers.h"
-#include "interfaces/AnnouncementManager.h"
 #include "addons/AddonInstaller.h"
 #include "guilib/Key.h"
 #include "dialogs/GUIDialogPVRChannelManager.h"

@@ -22,8 +22,6 @@
 #define	PVRSWITCHCHANNELJOB_H
 
 #include "PVRJob.h"
-#include "FileItem.h"
-#include "interfaces/AnnouncementManager.h"
 #include "pvr/PVRManager.h"
 
 namespace PVR
