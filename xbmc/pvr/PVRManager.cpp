@@ -59,6 +59,16 @@
 #include "guilib/Key.h"
 #include "dialogs/GUIDialogPVRChannelManager.h"
 
+#include "jobs/PVRCreateEPGsJob.h"
+#include "jobs/PVRStartManagerJob.h"
+#include "jobs/PVRUpdateChannelsJob.h"
+#include "jobs/PVRUpdateChannelGroupsJob.h"
+#include "jobs/PVRSwitchChannelJob.h"
+#include "jobs/PVRUpdateRecordingsJob.h"
+#include "jobs/PVRUpdateTimersJob.h"
+#include "jobs/PVRSaveChannelSettingsJob.h"
+#include "jobs/PVRSearchMissingChannelIconsJob.h"
+
 using namespace std;
 using namespace MUSIC_INFO;
 using namespace PVR;
@@ -318,22 +328,6 @@ void CPVRManager::ResetProperties(void)
     m_parentalTimer = new CStopWatch;
   }
 }
-
-class CPVRManagerStartJob : public CJob
-{
-public:
-  CPVRManagerStartJob(bool bOpenPVRWindow = false) :
-    m_bOpenPVRWindow(bOpenPVRWindow) {}
-  ~CPVRManagerStartJob(void) {}
-
-  bool DoWork(void)
-  {
-    g_PVRManager.Start(false, m_bOpenPVRWindow);
-    return true;
-  }
-private:
-  bool m_bOpenPVRWindow;
-};
 
 void CPVRManager::Start(bool bAsync /* = false */, bool bOpenPVRWindow /* = false */)
 {
@@ -934,38 +928,6 @@ CPVRChannelGroupPtr CPVRManager::GetPlayingGroup(bool bRadio /* = false */)
   return CPVRChannelGroupPtr();
 }
 
-bool CPVREpgsCreateJob::DoWork(void)
-{
-  return g_PVRManager.CreateChannelEpgs();
-}
-
-bool CPVRRecordingsUpdateJob::DoWork(void)
-{
-  g_PVRRecordings->Update();
-  return true;
-}
-
-bool CPVRTimersUpdateJob::DoWork(void)
-{
-  return g_PVRTimers->Update();
-}
-
-bool CPVRChannelsUpdateJob::DoWork(void)
-{
-  return g_PVRChannelGroups->Update(true);
-}
-
-bool CPVRChannelGroupsUpdateJob::DoWork(void)
-{
-  return g_PVRChannelGroups->Update(false);
-}
-
-bool CPVRChannelSettingsSaveJob::DoWork(void)
-{
-  g_PVRManager.SaveCurrentChannelSettings();
-  return true;
-}
-
 bool CPVRManager::OpenLiveStream(const CFileItem &channel)
 {
   bool bReturn(false);
@@ -1549,34 +1511,6 @@ void CPVRManager::SettingOptionsPvrStartLastChannelFiller(const CSetting *settin
   list.push_back(make_pair(g_localizeStrings.Get(106),   PVR::START_LAST_CHANNEL_OFF));
   list.push_back(make_pair(g_localizeStrings.Get(19190), PVR::START_LAST_CHANNEL_MIN));
   list.push_back(make_pair(g_localizeStrings.Get(107),   PVR::START_LAST_CHANNEL_ON));
-}
-
-bool CPVRChannelSwitchJob::DoWork(void)
-{
-  // announce OnStop and delete m_previous when done
-  if (m_previous)
-  {
-    CVariant data(CVariant::VariantTypeObject);
-    data["end"] = true;
-    ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Player, "xbmc", "OnStop", CFileItemPtr(m_previous), data);
-  }
-
-  // announce OnPlay if the switch was successful
-  if (m_next)
-  {
-    CVariant param;
-    param["player"]["speed"] = 1;
-    param["player"]["playerid"] = g_playlistPlayer.GetCurrentPlaylist();
-    ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Player, "xbmc", "OnPlay", CFileItemPtr(new CFileItem(*m_next)), param);
-  }
-
-  return true;
-}
-
-bool CPVRSearchMissingChannelIconsJob::DoWork(void)
-{
-  g_PVRManager.SearchMissingChannelIcons();
-  return true;
 }
 
 bool CPVRManager::CreateChannelEpgs(void)
