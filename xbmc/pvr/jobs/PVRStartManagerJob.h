@@ -25,12 +25,12 @@
 
 namespace PVR
 {
-  class CPVRManagerStartJob : public CPVRJob
+  class CPVRStartManagerJob : public CPVRJob
   {
   public:
-    CPVRManagerStartJob(bool bOpenPVRWindow = false) :
+    CPVRStartManagerJob(bool bOpenPVRWindow = false) :
       m_bOpenPVRWindow(bOpenPVRWindow) {}
-    ~CPVRManagerStartJob(void) {}
+    ~CPVRStartManagerJob(void) {}
 
     virtual bool DoWork(void)
     {

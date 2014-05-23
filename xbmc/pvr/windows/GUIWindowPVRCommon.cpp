@@ -492,7 +492,7 @@ bool CGUIWindowPVRCommon::ActionDeleteRecording(CFileItem *item)
   /* delete the recording */
   if (g_PVRRecordings->DeleteRecording(*item))
   {
-    g_PVRManager.QueueJob(new CPVRRecordingsUpdateJob());
+    g_PVRManager.QueueJob(new CPVRUpdateRecordingsJob());
     bReturn = true;
   }
 

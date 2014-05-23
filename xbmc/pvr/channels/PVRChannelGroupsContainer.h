@@ -27,14 +27,14 @@
 namespace PVR
 {
   class CPVRManager;
-  class CPVRChannelsUpdateJob;
-  class CPVRChannelGroupsUpdateJob;
+  class CPVRUpdateChannelsJob;
+  class CPVRUpdateChannelGroupsJob;
 
   class CPVRChannelGroupsContainer
   {
     friend class CPVRManager;
-    friend class CPVRChannelsUpdateJob;
-    friend class CPVRChannelGroupsUpdateJob;
+    friend class CPVRUpdateChannelsJob;
+    friend class CPVRUpdateChannelGroupsJob;
 
   public:
     /*!

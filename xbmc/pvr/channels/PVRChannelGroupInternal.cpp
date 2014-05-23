@@ -393,5 +393,5 @@ bool CPVRChannelGroupInternal::CreateChannelEpgs(bool bForce /* = false */)
 void CPVRChannelGroupInternal::Notify(const Observable &obs, const ObservableMessage msg)
 {
   if (msg == ObservableMessageManagerStateChanged)
-    g_PVRManager.QueueJob(new CPVREpgsCreateJob());
+    g_PVRManager.QueueJob(new CPVRCreateEpgsJob());
 }

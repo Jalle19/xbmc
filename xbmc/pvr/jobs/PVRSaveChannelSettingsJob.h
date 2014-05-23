@@ -26,11 +26,11 @@
 
 namespace PVR
 {
-class CPVRChannelSettingsSaveJob : public CPVRJob
+class CPVRSaveChannelSettingsJob : public CPVRJob
 {
 public:
-  CPVRChannelSettingsSaveJob(void) {}
-  virtual ~CPVRChannelSettingsSaveJob() {}
+  CPVRSaveChannelSettingsJob(void) {}
+  virtual ~CPVRSaveChannelSettingsJob() {}
   virtual const char *GetType() const { return "pvr-save-channelsettings"; }
 
   virtual bool DoWork()

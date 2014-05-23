@@ -327,7 +327,7 @@ void CPVRManager::Start(bool bAsync /* = false */, bool bOpenPVRWindow /* = fals
 {
   if (bAsync)
   {
-    QueueJob(new CPVRManagerStartJob(bOpenPVRWindow));
+    QueueJob(new CPVRStartManagerJob(bOpenPVRWindow));
     return;
   }
 
@@ -1246,7 +1246,7 @@ bool CPVRManager::PerformChannelSwitch(const CPVRChannel &channel, bool bPreview
   }
 
   // announce OnStop and OnPlay. yes, this ain't pretty
-  QueueJob(new CPVRChannelSwitchJob(previousFile, m_currentFile));
+  QueueJob(new CPVRSwitchChannelJob(previousFile, m_currentFile));
 
   return bSwitched;
 }

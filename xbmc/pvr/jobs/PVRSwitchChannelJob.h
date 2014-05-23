@@ -26,11 +26,11 @@
 
 namespace PVR
 {
-class CPVRChannelSwitchJob : public CPVRJob
+class CPVRSwitchChannelJob : public CPVRJob
 {
 public:
-  CPVRChannelSwitchJob(CFileItem* previous, CFileItem* next) : m_previous(previous), m_next(next) {}
-  virtual ~CPVRChannelSwitchJob() {}
+  CPVRSwitchChannelJob(CFileItem* previous, CFileItem* next) : m_previous(previous), m_next(next) {}
+  virtual ~CPVRSwitchChannelJob() {}
   virtual const char *GetType() const { return "pvr-channel-switch"; }
 
   virtual bool DoWork()

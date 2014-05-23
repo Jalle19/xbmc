@@ -130,7 +130,7 @@ bool CGUIWindowPVRTimers::OnClickButton(CGUIMessage &message)
   if (IsSelectedButton(message))
   {
     bReturn = true;
-    g_PVRManager.QueueJob(new CPVRTimersUpdateJob());
+    g_PVRManager.QueueJob(new CPVRUpdateTimersJob());
   }
 
   return bReturn;

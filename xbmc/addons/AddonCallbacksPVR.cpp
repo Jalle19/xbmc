@@ -280,22 +280,22 @@ void CAddonCallbacksPVR::PVRRecording(void *addonData, const char *strName, cons
 
 void CAddonCallbacksPVR::PVRTriggerChannelUpdate(void *addonData)
 {
-  g_PVRManager.QueueJob(new CPVRChannelsUpdateJob());
+  g_PVRManager.QueueJob(new CPVRUpdateChannelsJob());
 }
 
 void CAddonCallbacksPVR::PVRTriggerTimerUpdate(void *addonData)
 {
-  g_PVRManager.QueueJob(new CPVRTimersUpdateJob());
+  g_PVRManager.QueueJob(new CPVRUpdateTimersJob());
 }
 
 void CAddonCallbacksPVR::PVRTriggerRecordingUpdate(void *addonData)
 {
-  g_PVRManager.QueueJob(new CPVRRecordingsUpdateJob());
+  g_PVRManager.QueueJob(new CPVRUpdateRecordingsJob());
 }
 
 void CAddonCallbacksPVR::PVRTriggerChannelGroupsUpdate(void *addonData)
 {
-  g_PVRManager.QueueJob(new CPVRChannelGroupsUpdateJob());
+  g_PVRManager.QueueJob(new CPVRUpdateChannelGroupsJob());
 }
 
 void CAddonCallbacksPVR::PVRTriggerEpgUpdate(void *addonData, unsigned int iChannelUid)

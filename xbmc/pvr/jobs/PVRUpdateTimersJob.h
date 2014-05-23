@@ -27,11 +27,11 @@
 
 namespace PVR
 {
-class CPVRTimersUpdateJob : public CPVRJob
+class CPVRUpdateTimersJob : public CPVRJob
 {
 public:
-  CPVRTimersUpdateJob(void) {}
-  virtual ~CPVRTimersUpdateJob() {}
+  CPVRUpdateTimersJob(void) {}
+  virtual ~CPVRUpdateTimersJob() {}
   virtual const char *GetType() const { return "pvr-update-timers"; }
 
   virtual bool DoWork()

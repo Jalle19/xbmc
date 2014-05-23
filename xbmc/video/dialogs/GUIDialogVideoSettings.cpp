@@ -148,7 +148,7 @@ void CGUIDialogVideoSettings::OnSettingChanged(const CSetting *setting)
     videoSettings.m_StereoInvert = static_cast<const CSettingBool*>(setting)->GetValue();
 
   if (g_PVRManager.IsPlayingRadio() || g_PVRManager.IsPlayingTV())
-    g_PVRManager.QueueJob(new CPVRChannelSettingsSaveJob());
+    g_PVRManager.QueueJob(new CPVRSaveChannelSettingsJob());
 }
 
 void CGUIDialogVideoSettings::OnSettingAction(const CSetting *setting)

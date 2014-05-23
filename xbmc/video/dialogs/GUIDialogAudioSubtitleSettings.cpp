@@ -189,7 +189,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(const CSetting *setting)
   }
 
   if (g_PVRManager.IsPlayingRadio() || g_PVRManager.IsPlayingTV())
-    g_PVRManager.QueueJob(new CPVRChannelSettingsSaveJob());
+    g_PVRManager.QueueJob(new CPVRSaveChannelSettingsJob());
 }
 
 void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)

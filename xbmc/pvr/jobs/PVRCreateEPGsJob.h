@@ -26,11 +26,11 @@
 
 namespace PVR
 {
-class CPVREpgsCreateJob : public CPVRJob
+class CPVRCreateEpgsJob : public CPVRJob
 {
 public:
-  CPVREpgsCreateJob(void) {}
-  virtual ~CPVREpgsCreateJob() {}
+  CPVRCreateEpgsJob(void) {}
+  virtual ~CPVRCreateEpgsJob() {}
   virtual const char *GetType() const { return "pvr-create-epgs"; }
 
   virtual bool DoWork()

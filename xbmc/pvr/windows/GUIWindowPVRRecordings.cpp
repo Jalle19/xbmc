@@ -250,7 +250,7 @@ bool CGUIWindowPVRRecordings::OnClickButton(CGUIMessage &message)
   if (IsSelectedButton(message))
   {
     bReturn = true;
-    g_PVRManager.QueueJob(new CPVRRecordingsUpdateJob());
+    g_PVRManager.QueueJob(new CPVRUpdateRecordingsJob());
   }
 
   return bReturn;

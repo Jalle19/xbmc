@@ -26,11 +26,11 @@
 
 namespace PVR
 {
-class CPVRChannelGroupsUpdateJob : public CPVRJob
+class CPVRUpdateChannelGroupsJob : public CPVRJob
 {
 public:
-  CPVRChannelGroupsUpdateJob(void) {}
-  virtual ~CPVRChannelGroupsUpdateJob() {}
+  CPVRUpdateChannelGroupsJob(void) {}
+  virtual ~CPVRUpdateChannelGroupsJob() {}
   virtual const char *GetType() const { return "pvr-update-channelgroups"; }
 
   virtual bool DoWork()
