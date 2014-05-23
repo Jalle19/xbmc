@@ -31,6 +31,7 @@ namespace PVR
     CPVRStartManagerJob(bool bOpenPVRWindow = false) :
       m_bOpenPVRWindow(bOpenPVRWindow) {}
     ~CPVRStartManagerJob(void) {}
+    virtual const char *GetType() const { return "pvr-start-manager"; }
 
     virtual bool DoWork(void)
     {

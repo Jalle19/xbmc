@@ -27,6 +27,11 @@ namespace PVR
 {
 class CPVRJob : public CJob
 {
+  /**
+   * All PVR jobs need to implement this since it's used for comparing
+   * @return 
+   */
+  virtual const char *GetType() const = 0;
 
   /**
    * PVR related jobs are considered equal if their types match
