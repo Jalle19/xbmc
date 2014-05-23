@@ -32,6 +32,7 @@
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
 #include "pvr/PVRManager.h"
+#include "pvr/jobs/PVRUpdateRecordingsJob.h"
 #include "pvr/channels/PVRChannelGroupsContainer.h"
 #include "pvr/dialogs/GUIDialogPVRGuideInfo.h"
 #include "pvr/dialogs/GUIDialogPVRRecordingInfo.h"
@@ -491,7 +492,7 @@ bool CGUIWindowPVRCommon::ActionDeleteRecording(CFileItem *item)
   /* delete the recording */
   if (g_PVRRecordings->DeleteRecording(*item))
   {
-    g_PVRManager.TriggerRecordingsUpdate();
+    g_PVRManager.QueueJob(new CPVRRecordingsUpdateJob());
     bReturn = true;
   }
 

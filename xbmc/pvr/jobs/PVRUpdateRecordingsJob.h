@@ -23,6 +23,7 @@
 
 #include "utils/Job.h"
 #include "pvr/PVRManager.h"
+#include "pvr/recordings/PVRRecordings.h"
 
 namespace PVR
 {

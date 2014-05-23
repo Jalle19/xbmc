@@ -27,6 +27,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "GUIInfoManager.h"
 #include "pvr/PVRManager.h"
+#include "pvr/jobs/PVRUpdateRecordingsJob.h"
 #include "pvr/recordings/PVRRecordings.h"
 #include "pvr/timers/PVRTimers.h"
 #include "pvr/windows/GUIWindowPVR.h"
@@ -249,7 +250,7 @@ bool CGUIWindowPVRRecordings::OnClickButton(CGUIMessage &message)
   if (IsSelectedButton(message))
   {
     bReturn = true;
-    g_PVRManager.TriggerRecordingsUpdate();
+    g_PVRManager.QueueJob(new CPVRRecordingsUpdateJob());
   }
 
   return bReturn;

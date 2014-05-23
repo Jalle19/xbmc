@@ -154,7 +154,7 @@ void CPVRManager::OnSettingAction(const CSetting *setting)
   if (settingId == "pvrmenu.searchicons")
   {
     if (IsStarted())
-      TriggerSearchMissingChannelIcons();
+      QueueJob(new CPVRSearchMissingChannelIconsJob());
   }
   else if (settingId == "pvrmanager.resetdb")
   {
@@ -452,7 +452,7 @@ void CPVRManager::Process(void)
       }
       
       /* start job to search for missing channel icons */
-      TriggerSearchMissingChannelIcons();
+      QueueJob(new CPVRSearchMissingChannelIconsJob());
       
       /* continue last watched channel */
       ContinueLastChannel();
@@ -1414,41 +1414,6 @@ void CPVRManager::QueueJob(CJob *job)
 
   lock.Leave();
   m_triggerEvent.Set();
-}
-
-void CPVRManager::TriggerEpgsCreate(void)
-{
-  QueueJob(new CPVREpgsCreateJob());
-}
-
-void CPVRManager::TriggerRecordingsUpdate(void)
-{
-  QueueJob(new CPVRRecordingsUpdateJob());
-}
-
-void CPVRManager::TriggerTimersUpdate(void)
-{
-  QueueJob(new CPVRTimersUpdateJob());
-}
-
-void CPVRManager::TriggerChannelsUpdate(void)
-{
-  QueueJob(new CPVRChannelsUpdateJob());
-}
-
-void CPVRManager::TriggerChannelGroupsUpdate(void)
-{
-  QueueJob(new CPVRChannelGroupsUpdateJob());
-}
-
-void CPVRManager::TriggerSaveChannelSettings(void)
-{
-  QueueJob(new CPVRChannelSettingsSaveJob());
-}
-
-void CPVRManager::TriggerSearchMissingChannelIcons(void)
-{
-  CJobManager::GetInstance().AddJob(new CPVRSearchMissingChannelIconsJob(), NULL);
 }
 
 void CPVRManager::ExecutePendingJobs(void)

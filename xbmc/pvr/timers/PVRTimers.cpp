@@ -30,6 +30,7 @@
 
 #include "PVRTimers.h"
 #include "pvr/PVRManager.h"
+#include "pvr/jobs/PVRUpdateTimersJob.h"
 #include "pvr/channels/PVRChannelGroupsContainer.h"
 #include "epg/EpgContainer.h"
 #include "pvr/addons/PVRClients.h"
@@ -655,7 +656,7 @@ CFileItemPtr CPVRTimers::GetTimerForEpgTag(const CFileItem *item) const
 void CPVRTimers::Notify(const Observable &obs, const ObservableMessage msg)
 {
   if (msg == ObservableMessageEpgContainer)
-    g_PVRManager.TriggerTimersUpdate();
+    g_PVRManager.QueueJob(new CPVRTimersUpdateJob());
 }
 
 CDateTime CPVRTimers::GetNextEventTime(void) const

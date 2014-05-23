@@ -32,6 +32,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "profiles/ProfilesManager.h"
 #include "pvr/PVRManager.h"
+#include "pvr/jobs/PVRSaveChannelSettingsJob.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
@@ -188,7 +189,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(const CSetting *setting)
   }
 
   if (g_PVRManager.IsPlayingRadio() || g_PVRManager.IsPlayingTV())
-    g_PVRManager.TriggerSaveChannelSettings();
+    g_PVRManager.QueueJob(new CPVRChannelSettingsSaveJob());
 }
 
 void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)

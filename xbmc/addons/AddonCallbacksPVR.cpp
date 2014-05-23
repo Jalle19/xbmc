@@ -33,6 +33,11 @@
 #include "pvr/timers/PVRTimers.h"
 #include "pvr/timers/PVRTimerInfoTag.h"
 
+#include "pvr/jobs/PVRUpdateChannelsJob.h"
+#include "pvr/jobs/PVRUpdateChannelGroupsJob.h"
+#include "pvr/jobs/PVRUpdateRecordingsJob.h"
+#include "pvr/jobs/PVRUpdateTimersJob.h"
+
 using namespace PVR;
 using namespace EPG;
 
@@ -275,26 +280,22 @@ void CAddonCallbacksPVR::PVRRecording(void *addonData, const char *strName, cons
 
 void CAddonCallbacksPVR::PVRTriggerChannelUpdate(void *addonData)
 {
-  /* update the channels table in the next iteration of the pvrmanager's main loop */
-  g_PVRManager.TriggerChannelsUpdate();
+  g_PVRManager.QueueJob(new CPVRChannelsUpdateJob());
 }
 
 void CAddonCallbacksPVR::PVRTriggerTimerUpdate(void *addonData)
 {
-  /* update the timers table in the next iteration of the pvrmanager's main loop */
-  g_PVRManager.TriggerTimersUpdate();
+  g_PVRManager.QueueJob(new CPVRTimersUpdateJob());
 }
 
 void CAddonCallbacksPVR::PVRTriggerRecordingUpdate(void *addonData)
 {
-  /* update the recordings table in the next iteration of the pvrmanager's main loop */
-  g_PVRManager.TriggerRecordingsUpdate();
+  g_PVRManager.QueueJob(new CPVRRecordingsUpdateJob());
 }
 
 void CAddonCallbacksPVR::PVRTriggerChannelGroupsUpdate(void *addonData)
 {
-  /* update all channel groups in the next iteration of the pvrmanager's main loop */
-  g_PVRManager.TriggerChannelGroupsUpdate();
+  g_PVRManager.QueueJob(new CPVRChannelGroupsUpdateJob());
 }
 
 void CAddonCallbacksPVR::PVRTriggerEpgUpdate(void *addonData, unsigned int iChannelUid)

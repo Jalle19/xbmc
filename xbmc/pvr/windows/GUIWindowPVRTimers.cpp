@@ -26,6 +26,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "guilib/Key.h"
 #include "pvr/PVRManager.h"
+#include "pvr/jobs/PVRUpdateTimersJob.h"
 #include "pvr/timers/PVRTimers.h"
 #include "pvr/addons/PVRClients.h"
 #include "GUIWindowPVR.h"
@@ -129,7 +130,7 @@ bool CGUIWindowPVRTimers::OnClickButton(CGUIMessage &message)
   if (IsSelectedButton(message))
   {
     bReturn = true;
-    g_PVRManager.TriggerTimersUpdate();
+    g_PVRManager.QueueJob(new CPVRTimersUpdateJob());
   }
 
   return bReturn;

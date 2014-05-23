@@ -30,6 +30,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "profiles/ProfilesManager.h"
 #include "pvr/PVRManager.h"
+#include "pvr/jobs/PVRSaveChannelSettingsJob.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
 #include "settings/lib/Setting.h"
@@ -147,7 +148,7 @@ void CGUIDialogVideoSettings::OnSettingChanged(const CSetting *setting)
     videoSettings.m_StereoInvert = static_cast<const CSettingBool*>(setting)->GetValue();
 
   if (g_PVRManager.IsPlayingRadio() || g_PVRManager.IsPlayingTV())
-    g_PVRManager.TriggerSaveChannelSettings();
+    g_PVRManager.QueueJob(new CPVRChannelSettingsSaveJob());
 }
 
 void CGUIDialogVideoSettings::OnSettingAction(const CSetting *setting)

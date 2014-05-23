@@ -367,41 +367,6 @@ namespace PVR
     CPVRChannelGroupPtr GetPlayingGroup(bool bRadio = false);
 
     /*!
-     * @brief Let the background thread create epg tags for all channels.
-     */
-    void TriggerEpgsCreate(void);
-
-    /*!
-     * @brief Let the background thread update the recordings list.
-     */
-    void TriggerRecordingsUpdate(void);
-
-    /*!
-     * @brief Let the background thread update the timer list.
-     */
-    void TriggerTimersUpdate(void);
-
-    /*!
-     * @brief Let the background thread update the channel list.
-     */
-    void TriggerChannelsUpdate(void);
-
-    /*!
-     * @brief Let the background thread update the channel groups list.
-     */
-    void TriggerChannelGroupsUpdate(void);
-
-    /*!
-     * @brief Let the background thread save the current video settings.
-     */
-    void TriggerSaveChannelSettings(void);
-
-    /*!
-     * @brief Let the background thread search for missing channel icons.
-     */
-    void TriggerSearchMissingChannelIcons(void);
-
-    /*!
      * @brief Update the channel that is currently active.
      * @param item The new channel.
      * @return True if it was updated correctly, false otherwise.
@@ -544,6 +509,13 @@ namespace PVR
      * @return True when loaded, false otherwise
      */
     bool WaitUntilInitialised(void);
+    
+    /*!
+     * @brief Adds the job to the list of pending jobs unless an identical 
+     * job is already queued
+     * @param job the job
+     */
+    void QueueJob(CJob *job);
 
     /*!
      * @brief Handle PVR specific cActions
@@ -639,13 +611,6 @@ namespace PVR
     void ExecutePendingJobs(void);
 
     bool IsJobPending(const char *strJobName) const;
-
-    /*!
-     * @brief Adds the job to the list of pending jobs unless an identical 
-     * job is already queued
-     * @param job the job
-     */
-    void QueueJob(CJob *job);
 
     ManagerState GetState(void) const;
 

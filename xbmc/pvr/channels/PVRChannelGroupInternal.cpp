@@ -33,6 +33,8 @@
 #include "pvr/timers/PVRTimers.h"
 #include "pvr/addons/PVRClients.h"
 
+#include "pvr/jobs/PVRCreateEPGsJob.h"
+
 using namespace PVR;
 using namespace EPG;
 using namespace std;
@@ -391,7 +393,5 @@ bool CPVRChannelGroupInternal::CreateChannelEpgs(bool bForce /* = false */)
 void CPVRChannelGroupInternal::Notify(const Observable &obs, const ObservableMessage msg)
 {
   if (msg == ObservableMessageManagerStateChanged)
-  {
-    g_PVRManager.TriggerEpgsCreate();
-  }
+    g_PVRManager.QueueJob(new CPVREpgsCreateJob());
 }
