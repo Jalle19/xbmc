@@ -288,7 +288,7 @@ bool CPVRRecordings::SetRecordingsPlayCount(const CFileItemPtr &item, int count)
         continue;
       }
 
-      pItem->GetPVRRecordingInfoTag()->SetPlayCount(count);
+      SetPlayCount(*pItem, count);
 
       // Clear resume bookmark
       if (count > 0)
