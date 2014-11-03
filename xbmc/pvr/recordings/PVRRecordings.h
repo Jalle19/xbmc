@@ -86,7 +86,6 @@ namespace PVR
     bool GetDirectory(const std::string& strPath, CFileItemList &items);
     CFileItemPtr GetByPath(const std::string &path);
     CPVRRecordingPtr GetById(int iClientId, const std::string &strRecordingId) const;
-    void SetPlayCount(const CFileItem &item, int iPlayCount);
     void GetAll(CFileItemList &items);
     CFileItemPtr GetById(unsigned int iId) const;
 
