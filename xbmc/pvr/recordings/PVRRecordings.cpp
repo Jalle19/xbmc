@@ -445,6 +445,12 @@ CPVRRecordingPtr CPVRRecordings::GetById(int iClientId, const std::string &strRe
   return retVal;
 }
 
+CPVRRecordingPtr CPVRRecordings::GetByFileItem(const CFileItem &item) const
+{
+  const CPVRRecording *recording = item.GetPVRRecordingInfoTag();
+  return GetById(recording->m_iClientId, recording->m_strRecordingId);
+}
+
 void CPVRRecordings::Clear()
 {
   CSingleLock lock(m_critSection);
