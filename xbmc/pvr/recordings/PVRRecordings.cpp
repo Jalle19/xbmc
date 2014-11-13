@@ -274,6 +274,9 @@ bool CPVRRecordings::SetRecordingsPlayCount(const CFileItemPtr &item, int count)
         continue;
       }
 
+      if (!pItem->HasPVRRecordingInfoTag())
+        continue;
+
       CPVRRecordingPtr recording = GetByFileItem(*pItem);
       recording->SetPlayCount(count);
 
