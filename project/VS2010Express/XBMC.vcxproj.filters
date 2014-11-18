@@ -1672,9 +1672,6 @@
     <ClCompile Include="..\..\xbmc\epg\EpgContainer.cpp">
       <Filter>epg</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\epg\EpgDatabase.cpp">
-      <Filter>epg</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\epg\EpgInfoTag.cpp">
       <Filter>epg</Filter>
     </ClCompile>
@@ -4660,9 +4657,6 @@
       <Filter>epg</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\epg\EpgContainer.h">
-      <Filter>epg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\epg\EpgDatabase.h">
       <Filter>epg</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\epg\EpgInfoTag.h">

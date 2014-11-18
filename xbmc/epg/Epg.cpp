@@ -25,7 +25,6 @@
 #include "utils/log.h"
 #include "utils/TimeUtils.h"
 
-#include "EpgDatabase.h"
 #include "EpgContainer.h"
 #include "pvr/PVRManager.h"
 #include "pvr/addons/PVRClients.h"
@@ -382,37 +381,6 @@ void CEpg::UpdateRecording(CEpgInfoTagPtr tag)
   tag->ClearRecording();
 }
 
-bool CEpg::Load(void)
-{
-  bool bReturn(false);
-  CEpgDatabase *database = g_EpgContainer.GetDatabase();
-
-  if (!database || !database->IsOpen())
-  {
-    CLog::Log(LOGERROR, "EPG - %s - could not open the database", __FUNCTION__);
-    return bReturn;
-  }
-
-  CSingleLock lock(m_critSection);
-  int iEntriesLoaded = database->Get(*this);
-  if (iEntriesLoaded <= 0)
-  {
-    CLog::Log(LOGDEBUG, "EPG - %s - no database entries found for table '%s'.", __FUNCTION__, m_strName.c_str());
-  }
-  else
-  {
-    m_lastScanTime = GetLastScanTime();
-#if EPG_DEBUGGING
-    CLog::Log(LOGDEBUG, "EPG - %s - %d entries loaded for table '%s'.", __FUNCTION__, (int) m_tags.size(), m_strName.c_str());
-#endif
-    bReturn = true;
-  }
-
-  m_bLoaded = true;
-
-  return bReturn;
-}
-
 bool CEpg::UpdateEntries(const CEpg &epg, bool bStoreInDb /* = true */)
 {
   CSingleLock lock(m_critSection);
@@ -448,20 +416,8 @@ CDateTime CEpg::GetLastScanTime(void)
 
     if (!m_lastScanTime.IsValid())
     {
-      if (!CSettings::Get().GetBool("epg.ignoredbforclient"))
-      {
-        CEpgDatabase *database = g_EpgContainer.GetDatabase();
-        CDateTime dtReturn; dtReturn.SetValid(false);
-
-        if (database && database->IsOpen())
-          database->GetLastEpgScanTime(m_iEpgID, &m_lastScanTime);
-      }
-
-      if (!m_lastScanTime.IsValid())
-      {
-        m_lastScanTime.SetDateTime(0, 0, 0, 0, 0, 0);
-        m_lastScanTime.SetValid(true);
-      }
+      m_lastScanTime.SetDateTime(0, 0, 0, 0, 0, 0);
+      m_lastScanTime.SetValid(true);
     }
     lastScanTime = m_lastScanTime;
   }
@@ -473,10 +429,6 @@ bool CEpg::Update(const time_t start, const time_t end, int iUpdateTime, bool bF
 {
   bool bGrabSuccess(true);
   bool bUpdate(false);
-
-  /* load the entries from the db first */
-  if (!m_bLoaded && !g_EpgContainer.IgnoreDB())
-    Load();
 
   /* clean up if needed */
   if (m_bLoaded)
@@ -549,50 +501,6 @@ int CEpg::Get(CFileItemList &results, const EpgSearchFilter &filter) const
   }
 
   return results.Size() - iInitialSize;
-}
-
-bool CEpg::Persist(void)
-{
-  if (CSettings::Get().GetBool("epg.ignoredbforclient") || !NeedsSave())
-    return true;
-
-#if EPG_DEBUGGING
-  CLog::Log(LOGDEBUG, "persist table '%s' (#%d) changed=%d deleted=%d", Name().c_str(), m_iEpgID, m_changedTags.size(), m_deletedTags.size());
-#endif
-
-  CEpgDatabase *database = g_EpgContainer.GetDatabase();
-  if (!database || !database->IsOpen())
-  {
-    CLog::Log(LOGERROR, "EPG - %s - could not open the database", __FUNCTION__);
-    return false;
-  }
-
-  {
-    CSingleLock lock(m_critSection);
-    if (m_iEpgID <= 0 || m_bChanged)
-    {
-      int iId = database->Persist(*this, m_iEpgID > 0);
-      if (iId > 0)
-        m_iEpgID = iId;
-    }
-
-    for (std::map<int, CEpgInfoTagPtr>::iterator it = m_deletedTags.begin(); it != m_deletedTags.end(); it++)
-      database->Delete(*it->second);
-
-    for (std::map<int, CEpgInfoTagPtr>::iterator it = m_changedTags.begin(); it != m_changedTags.end(); it++)
-      it->second->Persist(false);
-
-    if (m_bUpdateLastScanTime)
-      database->PersistLastEpgScanTime(m_iEpgID, true);
-
-    m_deletedTags.clear();
-    m_changedTags.clear();
-    m_bChanged            = false;
-    m_bTagsChanged        = false;
-    m_bUpdateLastScanTime = false;
-  }
-
-  return database->CommitInsertQueries();
 }
 
 CDateTime CEpg::GetFirstDate(void) const

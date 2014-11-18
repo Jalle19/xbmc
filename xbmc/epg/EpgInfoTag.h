@@ -451,13 +451,6 @@ namespace EPG
     const PVR::CPVRChannelPtr ChannelTag(void) const;
 
     /*!
-     * @brief Persist this tag in the database.
-     * @param bSingleUpdate True if this is a single update, false if more updates will follow.
-     * @return True if the tag was persisted correctly, false otherwise.
-     */
-    bool Persist(bool bSingleUpdate = true);
-
-    /*!
      * @brief Update the information in this tag with the info in the given tag.
      * @param tag The new info.
      * @param bUpdateBroadcastId If set to false, the tag BroadcastId (locally unique) will not be chacked/updated

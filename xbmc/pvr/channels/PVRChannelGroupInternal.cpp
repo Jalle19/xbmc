@@ -378,12 +378,6 @@ bool CPVRChannelGroupInternal::CreateChannelEpgs(bool bForce /* = false */)
       CreateChannelEpg(m_members.at(iChannelPtr).channel);
   }
 
-  if (HasChangedChannels())
-  {
-    g_EpgContainer.PersistTables();
-    return Persist();
-  }
-
   return true;
 }
 

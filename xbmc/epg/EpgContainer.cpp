@@ -110,16 +110,6 @@ void CEpgContainer::Clear(bool bClearDb /* = false */)
     m_iNextEpgId = 0;
   }
 
-  /* clear the database entries */
-  if (bClearDb && !m_bIgnoreDbForClient)
-  {
-    if (!m_database.IsOpen())
-      m_database.Open();
-
-    if (m_database.IsOpen())
-      m_database.DeleteEpg();
-  }
-
   SetChanged();
   NotifyObservers(ObservableMessageEpgContainer);
 
@@ -134,9 +124,6 @@ void CEpgContainer::Start(void)
   {
     CSingleLock lock(m_critSection);
 
-    if (!m_database.IsOpen())
-      m_database.Open();
-
     m_bIsInitialising = true;
     m_bStop = false;
     LoadSettings();
@@ -144,8 +131,6 @@ void CEpgContainer::Start(void)
     m_iNextEpgUpdate  = 0;
     m_iNextEpgActiveTagCheck = 0;
   }
-
-  LoadFromDB();
 
   CSingleLock lock(m_critSection);
   if (!m_bStop)
@@ -164,9 +149,6 @@ void CEpgContainer::Start(void)
 bool CEpgContainer::Stop(void)
 {
   StopThread();
-
-  if (m_database.IsOpen())
-    m_database.Close();
 
   CSingleLock lock(m_critSection);
   m_bStarted = false;
@@ -189,70 +171,6 @@ void CEpgContainer::OnSettingChanged(const CSetting *setting)
   if (settingId == "epg.ignoredbforclient" || settingId == "epg.epgupdate" ||
       settingId == "epg.daystodisplay")
     LoadSettings();
-}
-
-void CEpgContainer::LoadFromDB(void)
-{
-  CSingleLock lock(m_critSection);
-
-  if (m_bLoaded || m_bIgnoreDbForClient)
-    return;
-
-  if (!m_database.IsOpen())
-    m_database.Open();
-
-  m_iNextEpgId = m_database.GetLastEPGId();
-
-  bool bLoaded(true);
-  unsigned int iCounter(0);
-  if (m_database.IsOpen())
-  {
-    ShowProgressDialog(false);
-
-    m_database.DeleteOldEpgEntries();
-    m_database.Get(*this);
-
-    for (EPGMAP_CITR it = m_epgs.begin(); it != m_epgs.end(); it++)
-    {
-      if (m_bStop)
-        break;
-      UpdateProgressDialog(++iCounter, m_epgs.size(), it->second->Name());
-      lock.Leave();
-      it->second->Load();
-      lock.Enter();
-    }
-
-    CloseProgressDialog();
-  }
-
-  m_bLoaded = bLoaded;
-}
-
-bool CEpgContainer::PersistTables(void)
-{
-  m_critSection.lock();
-  std::map<unsigned int, CEpg*> copy = m_epgs;
-  m_critSection.unlock();
-  return m_database.Persist(copy);
-}
-
-bool CEpgContainer::PersistAll(void)
-{
-  bool bReturn(true);
-  m_critSection.lock();
-  std::map<unsigned int, CEpg*> copy = m_epgs;
-  m_critSection.unlock();
-  
-  for (EPGMAP_CITR it = copy.begin(); it != copy.end() && !m_bStop; it++)
-  {
-    CEpg *epg = it->second;
-    if (epg && epg->NeedsSave())
-    {
-      bReturn &= epg->Persist();
-    }
-  }
-
-  return bReturn;
 }
 
 void CEpgContainer::Process(void)
@@ -318,13 +236,6 @@ void CEpgContainer::Process(void)
     if (!m_bStop)
       CheckPlayingEvents();
 
-    /* check for changes that need to be saved every 60 seconds */
-    if (iNow - iLastSave > 60)
-    {
-      PersistAll();
-      iLastSave = iNow;
-    }
-
     Sleep(1000);
   }
 }
@@ -381,7 +292,6 @@ CEpg *CEpgContainer::CreateChannelEpg(CPVRChannelPtr channel)
     return NULL;
 
   WaitForUpdateFinish(true);
-  LoadFromDB();
 
   CEpg *epg(NULL);
   if (channel->EpgID() > 0)
@@ -413,7 +323,6 @@ CEpg *CEpgContainer::CreateChannelEpg(CPVRChannelPtr channel)
 
 bool CEpgContainer::LoadSettings(void)
 {
-  m_bIgnoreDbForClient = CSettings::Get().GetBool("epg.ignoredbforclient");
   m_iUpdateTime        = CSettings::Get().GetInt ("epg.epgupdate") * 60;
   m_iDisplayTime       = CSettings::Get().GetInt ("epg.daystodisplay") * 24 * 60 * 60;
 
@@ -428,10 +337,6 @@ bool CEpgContainer::RemoveOldEntries(void)
   /* call Cleanup() on all known EPG tables */
   for (EPGMAP_CITR it = m_epgs.begin(); it != m_epgs.end(); it++)
     it->second->Cleanup(now);
-
-  /* remove the old entries from the database */
-  if (!m_bIgnoreDbForClient && m_database.IsOpen())
-    m_database.DeleteOldEpgEntries();
 
   CSingleLock lock(m_critSection);
   CDateTime::GetCurrentDateTime().GetAsUTCDateTime().GetAsTime(m_iLastEpgCleanup);
@@ -452,8 +357,6 @@ bool CEpgContainer::DeleteEpg(const CEpg &epg, bool bDeleteFromDatabase /* = fal
     return false;
 
   CLog::Log(LOGDEBUG, "deleting EPG table %s (%d)", epg.Name().c_str(), epg.EpgID());
-  if (bDeleteFromDatabase && !m_bIgnoreDbForClient && m_database.IsOpen())
-    m_database.Delete(*it->second);
 
   it->second->UnregisterObserver(this);
   delete it->second;
@@ -545,20 +448,6 @@ bool CEpgContainer::UpdateEPG(bool bOnlyPending /* = false */)
 
   if (bShowProgress && !bOnlyPending)
     ShowProgressDialog();
-
-  if (!m_bIgnoreDbForClient && !m_database.IsOpen())
-  {
-    CLog::Log(LOGERROR, "EpgContainer - %s - could not open the database", __FUNCTION__);
-
-    CSingleLock lock(m_critSection);
-    m_bIsUpdating = false;
-    m_updateEvent.Set();
-
-    if (bShowProgress && !bOnlyPending)
-      CloseProgressDialog();
-
-    return false;
-  }
 
   vector<CEpg*> invalidTables;
 

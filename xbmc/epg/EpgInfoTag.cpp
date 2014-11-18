@@ -22,7 +22,6 @@
 #include "Epg.h"
 #include "EpgInfoTag.h"
 #include "EpgContainer.h"
-#include "EpgDatabase.h"
 #include "pvr/channels/PVRChannelGroupsContainer.h"
 #include "pvr/timers/PVRTimers.h"
 #include "pvr/PVRManager.h"
@@ -997,39 +996,6 @@ bool CEpgInfoTag::Update(const CEpgInfoTag &tag, bool bUpdateBroadcastId /* = tr
     UpdatePath();
 
   return bChanged;
-}
-
-bool CEpgInfoTag::Persist(bool bSingleUpdate /* = true */)
-{
-  bool bReturn = false;
-  CSingleLock lock(m_critSection);
-  if (!m_bChanged)
-    return true;
-
-#if EPG_DEBUGGING
-  CLog::Log(LOGDEBUG, "Epg - %s - Infotag '%s' %s, persisting...", __FUNCTION__, m_strTitle.c_str(), m_iBroadcastId > 0 ? "has changes" : "is new");
-#endif
-
-  CEpgDatabase *database = g_EpgContainer.GetDatabase();
-  if (!database || (bSingleUpdate && !database->IsOpen()))
-  {
-    CLog::Log(LOGERROR, "%s - could not open the database", __FUNCTION__);
-    return bReturn;
-  }
-
-  int iId = database->Persist(*this, bSingleUpdate);
-  if (iId >= 0)
-  {
-    bReturn = true;
-
-    if (iId > 0)
-    {
-      m_iBroadcastId = iId;
-      m_bChanged = false;
-    }
-  }
-
-  return bReturn;
 }
 
 void CEpgInfoTag::UpdatePath(void)

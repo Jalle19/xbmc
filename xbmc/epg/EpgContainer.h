@@ -27,7 +27,6 @@
 #include "utils/Observer.h"
 
 #include "Epg.h"
-#include "EpgDatabase.h"
 
 #include <map>
 
@@ -66,12 +65,6 @@ namespace EPG
      * @return An instance of this singleton.
      */
     static CEpgContainer &Get(void);
-
-    /*!
-     * @brief Get a pointer to the database instance.
-     * @return A pointer to the database instance.
-     */
-    CEpgDatabase *GetDatabase(void) { return &m_database; }
 
     /*!
      * @brief Start the EPG update thread.
@@ -198,11 +191,6 @@ namespace EPG
     virtual void UpdateProgressDialog(int iCurrent, int iMax, const std::string &strText);
 
     /*!
-     * @return True to not to store EPG entries in the database.
-     */
-    virtual bool IgnoreDB(void) const { return m_bIgnoreDbForClient; }
-
-    /*!
      * @brief Wait for an EPG update to finish.
      * @param bInterrupt True to interrupt a running update.
      */
@@ -224,14 +212,6 @@ namespace EPG
      * @return True while being initialised.
      */
     bool IsInitialising(void) const;
-
-    /*!
-     * @brief Call Persist() on each table
-     * @return True when they all were persisted, false otherwise.
-     */
-    bool PersistAll(void);
-
-    bool PersistTables(void);
 
     /*!
      * @brief client can trigger an update request for a channel
@@ -268,22 +248,14 @@ namespace EPG
      */
     virtual void Process(void);
 
-    /*!
-     * @brief Load all tables from the database
-     */
-    void LoadFromDB(void);
-
     void InsertFromDatabase(int iEpgID, const std::string &strName, const std::string &strScraperName);
 
     typedef std::map<unsigned int, CEpg*> EPGMAP;
     typedef EPGMAP::iterator              EPGMAP_ITR;
     typedef EPGMAP::const_iterator        EPGMAP_CITR;
 
-    CEpgDatabase m_database;           /*!< the EPG database */
-
     /** @name Configuration */
     //@{
-    bool         m_bIgnoreDbForClient; /*!< don't save the EPG data in the database */
     int          m_iDisplayTime;       /*!< hours of EPG data to fetch */
     int          m_iUpdateTime;        /*!< update the full EPG after this period */
     //@}

@@ -67,12 +67,6 @@ namespace EPG
     CEpg &operator =(const CEpg &right);
 
     /*!
-     * @brief Load all entries for this table from the database.
-     * @return True if any entries were loaded, false otherwise.
-     */
-    bool Load(void);
-
-    /*!
      * @brief The channel this EPG belongs to.
      * @return The channel this EPG belongs to
      */
@@ -236,12 +230,6 @@ namespace EPG
      * @return The amount of entries that were added.
      */
     int Get(CFileItemList &results, const EpgSearchFilter &filter) const;
-
-    /*!
-     * @brief Persist this table in the database.
-     * @return True if the table was persisted, false otherwise.
-     */
-    bool Persist(void);
 
     /*!
      * @brief Get the start time of the first entry in this table.

@@ -268,7 +268,6 @@
     <ClCompile Include="..\..\xbmc\DynamicDll.cpp" />
     <ClCompile Include="..\..\xbmc\epg\Epg.cpp" />
     <ClCompile Include="..\..\xbmc\epg\EpgContainer.cpp" />
-    <ClCompile Include="..\..\xbmc\epg\EpgDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\epg\EpgInfoTag.cpp" />
     <ClCompile Include="..\..\xbmc\epg\EpgSearchFilter.cpp" />
     <ClCompile Include="..\..\xbmc\epg\GUIEPGGridContainer.cpp" />
@@ -1716,7 +1715,6 @@
     <ClInclude Include="..\..\xbmc\DynamicDll.h" />
     <ClInclude Include="..\..\xbmc\epg\Epg.h" />
     <ClInclude Include="..\..\xbmc\epg\EpgContainer.h" />
-    <ClInclude Include="..\..\xbmc\epg\EpgDatabase.h" />
     <ClInclude Include="..\..\xbmc\epg\EpgInfoTag.h" />
     <ClInclude Include="..\..\xbmc\epg\EpgSearchFilter.h" />
     <ClInclude Include="..\..\xbmc\epg\GUIEPGGridContainer.h" />
