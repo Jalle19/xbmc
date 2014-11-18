@@ -48,7 +48,6 @@ namespace EPG
                         public ISettingCallback,
                         private CThread
   {
-    friend class CEpgDatabase;
 
   public:
     /*!
@@ -79,19 +78,13 @@ namespace EPG
 
     /*!
      * @brief Clear all EPG entries.
-     * @param bClearDb Clear the database too if true.
      */
-    virtual void Clear(bool bClearDb = false);
+    virtual void Clear();
 
     /*!
      * @brief Stop the update thread and unload all data.
      */
     virtual void Unload(void);
-
-    /*!
-     * @brief Clear the EPG and all it's database entries.
-     */
-    virtual void Reset(void) { Clear(true); }
 
     /*!
      * @brief Check whether the EpgContainer has fully started.
@@ -102,10 +95,9 @@ namespace EPG
     /*!
      * @brief Delete an EPG table from this container.
      * @param epg The table to delete.
-     * @param bDeleteFromDatabase Delete this table from the database too if true.
      * @return
      */
-    virtual bool DeleteEpg(const CEpg &epg, bool bDeleteFromDatabase = false);
+    virtual bool DeleteEpg(const CEpg &epg);
 
     /*!
      * @brief Process a notification from an observable.
@@ -147,7 +139,7 @@ namespace EPG
 
     /*!
      * @brief Get an EPG table given it's ID.
-     * @param iEpgId The database ID of the table.
+     * @param iEpgId The ID of the table.
      * @return The table or NULL if it wasn't found.
      */
     virtual CEpg *GetById(int iEpgId) const;
@@ -263,7 +255,6 @@ namespace EPG
     bool         m_bIsUpdating;            /*!< true while an update is running */
     bool         m_bIsInitialising;        /*!< true while the epg manager hasn't loaded all tables */
     bool         m_bStarted;               /*!< true if EpgContainer has fully started */
-    bool         m_bLoaded;                /*!< true after epg data is initially loaded from the database */
     bool         m_bPreventUpdates;        /*!< true to prevent EPG updates */
     int          m_pendingUpdates;         /*!< count of pending manual updates */
     time_t       m_iLastEpgCleanup;        /*!< the time the EPG was cleaned up */

@@ -52,7 +52,6 @@ CEpgContainer::CEpgContainer(void) :
   m_bPreventUpdates = false;
   m_updateEvent.Reset();
   m_bStarted = false;
-  m_bLoaded = false;
   m_pendingUpdates = 0;
 }
 
@@ -70,7 +69,7 @@ CEpgContainer &CEpgContainer::Get(void)
 void CEpgContainer::Unload(void)
 {
   Stop();
-  Clear(false);
+  Clear();
 }
 
 bool CEpgContainer::IsStarted(void) const
@@ -85,7 +84,7 @@ unsigned int CEpgContainer::NextEpgId(void)
   return ++m_iNextEpgId;
 }
 
-void CEpgContainer::Clear(bool bClearDb /* = false */)
+void CEpgContainer::Clear()
 {
   /* make sure the update thread is stopped */
   bool bThreadRunning = !m_bStop;
@@ -318,7 +317,7 @@ bool CEpgContainer::RemoveOldEntries(void)
   return true;
 }
 
-bool CEpgContainer::DeleteEpg(const CEpg &epg, bool bDeleteFromDatabase /* = false */)
+bool CEpgContainer::DeleteEpg(const CEpg &epg)
 {
   if (epg.EpgID() < 0)
     return false;
@@ -461,7 +460,7 @@ bool CEpgContainer::UpdateEPG(bool bOnlyPending /* = false */)
   }
 
   for (vector<CEpg*>::iterator it = invalidTables.begin(); it != invalidTables.end(); it++)
-    DeleteEpg(**it, true);
+    DeleteEpg(**it);
 
   if (bInterrupted)
   {

@@ -757,7 +757,7 @@ void CPVRManager::ResetDatabase(bool bResetEPGOnly /* = false */)
   if (m_database && m_database->Open())
   {
     /* clean the EPG database */
-    g_EpgContainer.Reset();
+    g_EpgContainer.Clear();
     pDlgProgress->SetPercentage(30);
     pDlgProgress->Progress();
 
