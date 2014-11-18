@@ -329,7 +329,6 @@ void CEpg::AddEntry(const CEpgInfoTag &tag)
     newTag->SetPVRChannel(m_pvrChannel);
     newTag->m_epg          = this;
     UpdateRecording(newTag);
-    newTag->m_bChanged     = false;
   }
 }
 
@@ -752,17 +751,14 @@ int CEpg::SubChannelNumber(void) const
 void CEpg::SetChannel(PVR::CPVRChannelPtr channel)
 {
   CSingleLock lock(m_critSection);
-  if (m_pvrChannel != channel)
+  if (channel)
   {
-    if (channel)
-    {
-      SetName(channel->ChannelName());
-      channel->SetEpgID(m_iEpgID);
-    }
-    m_pvrChannel = channel;
-    for (map<CDateTime, CEpgInfoTagPtr>::iterator it = m_tags.begin(); it != m_tags.end(); it++)
-      it->second->SetPVRChannel(m_pvrChannel);
+    SetName(channel->ChannelName());
+    channel->SetEpgID(m_iEpgID);
   }
+  m_pvrChannel = channel;
+  for (map<CDateTime, CEpgInfoTagPtr>::iterator it = m_tags.begin(); it != m_tags.end(); it++)
+    it->second->SetPVRChannel(m_pvrChannel);
 }
 
 bool CEpg::HasPVRChannel(void) const
@@ -786,7 +782,7 @@ size_t CEpg::Size(void) const
 bool CEpg::NeedsSave(void) const
 {
   CSingleLock lock(m_critSection);
-  return !m_changedTags.empty() || !m_deletedTags.empty() || m_bChanged;
+  return !m_changedTags.empty() || !m_deletedTags.empty();
 }
 
 bool CEpg::IsValid(void) const

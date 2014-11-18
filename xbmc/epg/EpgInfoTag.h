@@ -74,12 +74,6 @@ namespace EPG
     virtual void Serialize(CVariant &value) const;
 
     /*!
-     * @brief Check whether this tag has changed and unsaved values.
-     * @return True if it has unsaved values, false otherwise.
-     */
-    bool Changed(void) const;
-
-    /*!
      * @brief Check if this event is currently active.
      * @return True if it's active, false otherwise.
      */
@@ -469,7 +463,6 @@ namespace EPG
     CDateTime GetCurrentPlayingTime(void) const;
 
     bool                     m_bNotify;            /*!< notify on start */
-    bool                     m_bChanged;           /*!< keep track of changes to this entry */
 
     int                      m_iBroadcastId;       /*!< database ID */
     int                      m_iGenreType;         /*!< genre type */
