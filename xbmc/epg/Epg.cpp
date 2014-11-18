@@ -333,7 +333,7 @@ bool CEpg::UpdateEntry(const CEpgInfoTag &tag, bool bSort /* = true */)
     bNewTag = true;
   }
 
-  infoTag->Update(tag, bNewTag);
+  infoTag->Update(tag);
   infoTag->m_epg          = this;
   infoTag->m_pvrChannel   = m_pvrChannel;
   UpdateRecording(infoTag);

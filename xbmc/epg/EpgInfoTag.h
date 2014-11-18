@@ -131,18 +131,6 @@ namespace EPG
     int UniqueBroadcastID(void) const;
 
     /*!
-     * @brief Change the event's database ID.
-     * @param iId The new database ID.
-     */
-    void SetBroadcastId(int iId);
-
-    /*!
-     * @brief Get the event's database ID.
-     * @return The database ID.
-     */
-    int BroadcastId(void) const;
-
-    /*!
      * @brief Get the event's start time.
      * @return The new start time.
      */
@@ -446,10 +434,9 @@ namespace EPG
     /*!
      * @brief Update the information in this tag with the info in the given tag.
      * @param tag The new info.
-     * @param bUpdateBroadcastId If set to false, the tag BroadcastId (locally unique) will not be chacked/updated
      * @return True if something changed, false otherwise.
      */
-    bool Update(const CEpgInfoTag &tag, bool bUpdateBroadcastId = true);
+    bool Update(const CEpgInfoTag &tag);
   protected:
     /*!
      * @brief Hook that is called when the start date changed.
@@ -463,7 +450,6 @@ namespace EPG
 
     bool                     m_bNotify;            /*!< notify on start */
 
-    int                      m_iBroadcastId;       /*!< database ID */
     int                      m_iGenreType;         /*!< genre type */
     int                      m_iGenreSubType;      /*!< genre subtype */
     int                      m_iParentalRating;    /*!< parental rating */
