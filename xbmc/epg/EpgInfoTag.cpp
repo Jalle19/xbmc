@@ -866,19 +866,6 @@ bool CEpgInfoTag::HasRecordingId(void) const
   return !m_strRecordingId.empty();
 }
 
-
-//void CEpgInfoTag::SetTimer(CPVRTimerInfoTagPtr newTimer)
-//{
-//  CPVRTimerInfoTagPtr oldTimer;
-//  {
-//    CSingleLock lock(m_critSection);
-//    oldTimer = m_timer;
-//    m_timer = newTimer;
-//  }
-//  if (oldTimer)
-//    oldTimer->ClearEpgTag();
-//}
-
 bool CEpgInfoTag::HasTimer(void) const
 {
   CSingleLock lock(m_critSection);
