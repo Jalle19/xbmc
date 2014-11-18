@@ -174,7 +174,7 @@ void CEpgContainer::OnSettingChanged(const CSetting *setting)
 
 void CEpgContainer::Process(void)
 {
-  time_t iNow(0), iLastSave(0);
+  time_t iNow(0);
   bool bUpdateEpg(true);
   bool bHasPendingUpdates(false);
 

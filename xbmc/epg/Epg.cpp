@@ -759,12 +759,6 @@ size_t CEpg::Size(void) const
   return m_tags.size();
 }
 
-bool CEpg::NeedsSave(void) const
-{
-  CSingleLock lock(m_critSection);
-  return !m_changedTags.empty() || !m_deletedTags.empty();
-}
-
 bool CEpg::IsValid(void) const
 {
   CSingleLock lock(m_critSection);
