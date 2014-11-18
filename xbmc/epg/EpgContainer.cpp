@@ -259,32 +259,6 @@ CEpg *CEpgContainer::GetByChannel(const CPVRChannel &channel) const
   return NULL;
 }
 
-void CEpgContainer::InsertFromDatabase(int iEpgID, const std::string &strName, const std::string &strScraperName)
-{
-  // table might already have been created when pvr channels were loaded
-  CEpg* epg = GetById(iEpgID);
-  if (epg)
-  {
-    if (epg->Name() != strName || epg->ScraperName() != strScraperName)
-    {
-      // current table data differs from the info in the db
-      epg->SetChanged();
-      SetChanged();
-    }
-  }
-  else
-  {
-    // create a new epg table
-    epg = new CEpg(iEpgID, strName, strScraperName, true);
-    if (epg)
-    {
-      m_epgs.insert(make_pair(iEpgID, epg));
-      SetChanged();
-      epg->RegisterObserver(this);
-    }
-  }
-}
-
 CEpg *CEpgContainer::CreateChannelEpg(CPVRChannelPtr channel)
 {
   if (!channel)
@@ -299,7 +273,7 @@ CEpg *CEpgContainer::CreateChannelEpg(CPVRChannelPtr channel)
   if (!epg)
   {
     channel->SetEpgID(NextEpgId());
-    epg = new CEpg(channel, false);
+    epg = new CEpg(channel);
 
     CSingleLock lock(m_critSection);
     m_epgs.insert(make_pair((unsigned int)epg->EpgID(), epg));

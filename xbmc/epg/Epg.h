@@ -48,16 +48,14 @@ namespace EPG
      * @param iEpgID The ID of this table or <= 0 to create a new ID.
      * @param strName The name of this table.
      * @param strScraperName The name of the scraper to use.
-     * @param bLoadedFromDb True if this table was loaded from the database, false otherwise.
      */
-    CEpg(int iEpgID, const std::string &strName = "", const std::string &strScraperName = "", bool bLoadedFromDb = false);
+    CEpg(int iEpgID, const std::string &strName = "", const std::string &strScraperName = "");
 
     /*!
      * @brief Create a new EPG instance for a channel.
      * @param channel The channel to create the EPG for.
-     * @param bLoadedFromDb True if this table was loaded from the database, false otherwise.
      */
-    CEpg(PVR::CPVRChannelPtr channel, bool bLoadedFromDb = false);
+    CEpg(PVR::CPVRChannelPtr channel);
 
     /*!
      * @brief Destroy this EPG instance.
@@ -329,9 +327,7 @@ namespace EPG
     std::map<CDateTime, CEpgInfoTagPtr> m_tags;
     std::map<int, CEpgInfoTagPtr>       m_changedTags;
     std::map<int, CEpgInfoTagPtr>       m_deletedTags;
-    bool                                m_bChanged;        /*!< true if anything changed that needs to be persisted, false otherwise */
     bool                                m_bTagsChanged;    /*!< true when any tags are changed and not persisted, false otherwise */
-    bool                                m_bLoaded;         /*!< true when the initial entries have been loaded */
     bool                                m_bUpdatePending;  /*!< true if manual update is pending */
     int                                 m_iEpgID;          /*!< the database ID of this table */
     std::string                         m_strName;         /*!< the name of this table */

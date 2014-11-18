@@ -37,10 +37,8 @@ using namespace PVR;
 using namespace EPG;
 using namespace std;
 
-CEpg::CEpg(int iEpgID, const std::string &strName /* = "" */, const std::string &strScraperName /* = "" */, bool bLoadedFromDb /* = false */) :
-    m_bChanged(!bLoadedFromDb),
+CEpg::CEpg(int iEpgID, const std::string &strName /* = "" */, const std::string &strScraperName /* = "" */) :
     m_bTagsChanged(false),
-    m_bLoaded(false),
     m_bUpdatePending(false),
     m_iEpgID(iEpgID),
     m_strName(strName),
@@ -51,10 +49,8 @@ CEpg::CEpg(int iEpgID, const std::string &strName /* = "" */, const std::string 
   m_pvrChannel = empty;
 }
 
-CEpg::CEpg(CPVRChannelPtr channel, bool bLoadedFromDb /* = false */) :
-    m_bChanged(!bLoadedFromDb),
+CEpg::CEpg(CPVRChannelPtr channel) :
     m_bTagsChanged(false),
-    m_bLoaded(false),
     m_bUpdatePending(false),
     m_iEpgID(channel->EpgID()),
     m_strName(channel->ChannelName()),
@@ -65,9 +61,7 @@ CEpg::CEpg(CPVRChannelPtr channel, bool bLoadedFromDb /* = false */) :
 }
 
 CEpg::CEpg(void) :
-    m_bChanged(false),
     m_bTagsChanged(false),
-    m_bLoaded(false),
     m_bUpdatePending(false),
     m_iEpgID(0),
     m_bUpdateLastScanTime(false)
@@ -83,9 +77,7 @@ CEpg::~CEpg(void)
 
 CEpg &CEpg::operator =(const CEpg &right)
 {
-  m_bChanged          = right.m_bChanged;
   m_bTagsChanged      = right.m_bTagsChanged;
-  m_bLoaded           = right.m_bLoaded;
   m_bUpdatePending    = right.m_bUpdatePending;
   m_iEpgID            = right.m_iEpgID;
   m_strName           = right.m_strName;
@@ -109,23 +101,13 @@ CEpg &CEpg::operator =(const CEpg &right)
 void CEpg::SetName(const std::string &strName)
 {
   CSingleLock lock(m_critSection);
-
-  if (m_strName != strName)
-  {
-    m_bChanged = true;
-    m_strName = strName;
-  }
+  m_strName != strName;
 }
 
 void CEpg::SetScraperName(const std::string &strScraperName)
 {
   CSingleLock lock(m_critSection);
-
-  if (m_strScraperName != strScraperName)
-  {
-    m_bChanged = true;
-    m_strScraperName = strScraperName;
-  }
+  m_strScraperName != strScraperName;
 }
 
 void CEpg::SetUpdatePending(bool bUpdatePending /* = true */)
@@ -426,9 +408,8 @@ bool CEpg::Update(const time_t start, const time_t end, int iUpdateTime, bool bF
   bool bGrabSuccess(true);
   bool bUpdate(false);
 
-  /* clean up if needed */
-  if (m_bLoaded)
-    Cleanup();
+  /* clean up */
+  Cleanup();
 
   /* get the last update time from the database */
   CDateTime lastScanTime = GetLastScanTime();
@@ -458,7 +439,6 @@ bool CEpg::Update(const time_t start, const time_t end, int iUpdateTime, bool bF
     if (g_PVRManager.GetCurrentChannel(channel) &&
         channel->EpgID() == m_iEpgID)
       g_PVRManager.ResetPlayingTag();
-    m_bLoaded = true;
   }
   else
     CLog::Log(LOGERROR, "EPG - %s - failed to update table '%s'", __FUNCTION__, Name().c_str());

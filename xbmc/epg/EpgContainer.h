@@ -248,8 +248,6 @@ namespace EPG
      */
     virtual void Process(void);
 
-    void InsertFromDatabase(int iEpgID, const std::string &strName, const std::string &strScraperName);
-
     typedef std::map<unsigned int, CEpg*> EPGMAP;
     typedef EPGMAP::iterator              EPGMAP_ITR;
     typedef EPGMAP::const_iterator        EPGMAP_CITR;
