@@ -200,11 +200,10 @@ namespace EPG
     /*!
      * @brief Update an entry in this EPG.
      * @param tag The tag to update.
-     * @param bUpdateDatabase If set to true, this event will be persisted in the database.
      * @param bSort If set to false, epg entries will not be sorted after updating; used for mass updates
      * @return True if it was updated successfully, false otherwise.
      */
-    bool UpdateEntry(const CEpgInfoTag &tag, bool bUpdateDatabase = false, bool bSort = true);
+    bool UpdateEntry(const CEpgInfoTag &tag, bool bSort = true);
 
     /*!
      * @brief Update the EPG from 'start' till 'end'.
@@ -264,10 +263,9 @@ namespace EPG
     /*!
      * @brief Update an entry in this EPG.
      * @param data The tag to update.
-     * @param bUpdateDatabase If set to true, this event will be persisted in the database.
      * @return True if it was updated successfully, false otherwise.
      */
-    bool UpdateEntry(const EPG_TAG *data, bool bUpdateDatabase = false);
+    bool UpdateEntry(const EPG_TAG *data);
 
     /*!
      * @return True if this is an EPG table for a radio channel, false otherwise.
@@ -299,10 +297,9 @@ namespace EPG
 
     /*!
      * @brief Fix overlapping events from the tables.
-     * @param bUpdateDb If set to yes, any changes to tags during fixing will be persisted to database
      * @return True if anything changed, false otherwise.
      */
-    bool FixOverlappingEvents(bool bUpdateDb = false);
+    bool FixOverlappingEvents();
 
     /*!
      * @brief Add an infotag to this container.
@@ -321,10 +318,9 @@ namespace EPG
     /*!
      * @brief Update the contents of this table with the contents provided in "epg"
      * @param epg The updated contents.
-     * @param bStoreInDb True to store the updated contents in the db, false otherwise.
      * @return True if the update was successful, false otherwise.
      */
-    bool UpdateEntries(const CEpg &epg, bool bStoreInDb = true);
+    bool UpdateEntries(const CEpg &epg);
 
     bool IsRemovableTag(const EPG::CEpgInfoTag &tag) const;
 

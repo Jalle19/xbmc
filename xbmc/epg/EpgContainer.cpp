@@ -168,8 +168,7 @@ void CEpgContainer::OnSettingChanged(const CSetting *setting)
     return;
 
   const std::string &settingId = setting->GetId();
-  if (settingId == "epg.ignoredbforclient" || settingId == "epg.epgupdate" ||
-      settingId == "epg.daystodisplay")
+  if (settingId == "epg.epgupdate" || settingId == "epg.daystodisplay")
     LoadSettings();
 }
 
