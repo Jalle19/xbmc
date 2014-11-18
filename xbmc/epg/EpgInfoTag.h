@@ -43,7 +43,6 @@ namespace EPG
   class CEpgInfoTag : public ISerializable
   {
     friend class CEpg;
-    friend class CEpgDatabase;
     friend class PVR::CPVRTimerInfoTag;
 
   public:

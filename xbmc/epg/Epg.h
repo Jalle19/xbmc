@@ -39,7 +39,6 @@ namespace EPG
 {
   class CEpg : public Observable
   {
-    friend class CEpgDatabase;
     friend class CEpgInfoTag;
 
   public:
@@ -122,8 +121,8 @@ namespace EPG
     void SetName(const std::string &strName);
 
     /*!
-     * @brief Get the database ID of this table.
-     * @return The database ID of this table.
+     * @brief Get the ID of this table.
+     * @return The ID of this table.
      */
     int EpgID(void) const { return m_iEpgID; }
 
@@ -327,7 +326,7 @@ namespace EPG
     std::map<int, CEpgInfoTagPtr>       m_deletedTags;
     bool                                m_bTagsChanged;    /*!< true when any tags are changed and not persisted, false otherwise */
     bool                                m_bUpdatePending;  /*!< true if manual update is pending */
-    int                                 m_iEpgID;          /*!< the database ID of this table */
+    int                                 m_iEpgID;          /*!< the ID of this table */
     std::string                         m_strName;         /*!< the name of this table */
     std::string                         m_strScraperName;  /*!< the name of the scraper to use */
     CDateTime                           m_nowActiveStart;  /*!< the start time of the tag that is currently active */
