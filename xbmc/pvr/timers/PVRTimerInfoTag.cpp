@@ -442,10 +442,6 @@ void CPVRTimerInfoTag::DisplayError(PVR_ERROR err) const
 void CPVRTimerInfoTag::SetEpgInfoTag(CEpgInfoTagPtr tag)
 {
   CSingleLock lock(m_critSection);
-  if (tag && m_epgTag != tag)
-    CLog::Log(LOGINFO, "cPVRTimerInfoTag: timer %s set to epg event %s", m_strTitle.c_str(), tag->Title().c_str());
-  else if (!tag && m_epgTag)
-    CLog::Log(LOGINFO, "cPVRTimerInfoTag: timer %s set to no epg event", m_strTitle.c_str());
   m_epgTag = tag;
 }
 
