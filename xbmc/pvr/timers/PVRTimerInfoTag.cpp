@@ -443,6 +443,11 @@ void CPVRTimerInfoTag::SetEpgInfoTag(CEpgInfoTagPtr tag)
 {
   CSingleLock lock(m_critSection);
   m_epgTag = tag;
+
+  // Copy some properties
+  m_genre = tag->Genre();
+  m_iGenreType = tag->GenreType();
+  m_iGenreSubType = tag->GenreSubType();
 }
 
 int CPVRTimerInfoTag::ChannelNumber() const
@@ -628,6 +633,7 @@ void CPVRTimerInfoTag::QueueNotification(void) const
 
 CEpgInfoTagPtr CPVRTimerInfoTag::GetEpgInfoTag(void) const
 {
+  CSingleLock lock(m_critSection);
   return m_epgTag;
 }
 

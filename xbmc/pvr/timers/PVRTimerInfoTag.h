@@ -66,7 +66,6 @@ namespace PVR
 
   class CPVRTimerInfoTag : public ISerializable
   {
-    friend class CPVRTimers;
     friend class CGUIDialogPVRTimerSettings;
 
   public:

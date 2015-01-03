@@ -701,10 +701,8 @@ CDateTime CPVRTimers::GetNextEventTime(void) const
 
 void CPVRTimers::UpdateEpgEvent(CPVRTimerInfoTagPtr timer)
 {
-  CSingleLock lock(timer->m_critSection);
-
   /* already got an epg event set */
-  if (timer->m_epgTag)
+  if (timer->GetEpgInfoTag())
     return;
 
   /* try to get the channel */
@@ -724,10 +722,7 @@ void CPVRTimers::UpdateEpgEvent(CPVRTimerInfoTagPtr timer)
 
   if (epgTag)
   {
-    timer->m_epgTag = epgTag;
-    timer->m_genre = epgTag->Genre();
-    timer->m_iGenreType = epgTag->GenreType();
-    timer->m_iGenreSubType = epgTag->GenreSubType();
+    timer->SetEpgInfoTag(epgTag);
     epgTag->SetTimer(timer);
   }
 }
