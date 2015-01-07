@@ -804,3 +804,33 @@ bool CPVRDatabase::Persist(CPVRChannel &channel, bool bQueueWrite /* = false */)
 
   return bReturn;
 }
+
+bool CPVRDatabase::UpdateLastWatched(const CPVRChannelPtr &channel)
+{
+  bool bReturn = false;
+
+  if (channel)
+  {
+    std::string strQuery = PrepareSQL("UPDATE channels SET iLastWatched = %d WHERE idChannel = %d",
+      channel->LastWatched(), channel->ChannelID());
+
+    bReturn = ExecuteQuery(strQuery);
+  }
+
+  return bReturn;
+}
+
+bool CPVRDatabase::UpdateLastWatched(const CPVRChannelGroupPtr &group)
+{
+  bool bReturn = false;
+
+  if (group)
+  {
+    std::string strQuery = PrepareSQL("UPDATE channelgroups SET iLastWatched = %d WHERE idGroup = %d",
+      group->LastWatched(), group->GroupID());
+
+    bReturn = ExecuteQuery(strQuery);
+  }
+
+  return bReturn;
+}
