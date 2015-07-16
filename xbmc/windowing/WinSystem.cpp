@@ -252,6 +252,26 @@ bool CWinSystemBase::UseLimitedColor()
 #endif
 }
 
+bool CWinSystemBase::UseDithering()
+{
+#if defined(HAS_GL)
+  static CSettingBool* setting = (CSettingBool*)CSettings::Get().GetSetting("videoscreen.dither");
+  return setting->GetValue();
+#else
+  return false;
+#endif
+}
+
+unsigned CWinSystemBase::DitherDepth()
+{
+#if defined(HAS_GL)
+  static CSettingInt* setting = (CSettingInt*)CSettings::Get().GetSetting("videoscreen.ditherdepth");
+  return setting->GetValue();
+#else
+  return 8;
+#endif
+}
+
 std::string CWinSystemBase::GetClipboardText(void)
 {
   return "";

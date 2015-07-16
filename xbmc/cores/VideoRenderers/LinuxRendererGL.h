@@ -40,8 +40,6 @@ class CRenderCapture;
 class CBaseTexture;
 namespace Shaders { class BaseYUV2RGBShader; }
 namespace Shaders { class BaseVideoFilterShader; }
-namespace VAAPI   { class CVaapiRenderPicture; }
-namespace VDPAU   { class CVdpauRenderPicture; }
 
 #undef ALIGN
 #define ALIGN(value, alignment) (((value)+((alignment)-1))&~((alignment)-1))
@@ -117,35 +115,23 @@ public:
   CLinuxRendererGL();
   virtual ~CLinuxRendererGL();
 
-  virtual void Update();
-  virtual void SetupScreenshot() {};
-
-  bool RenderCapture(CRenderCapture* capture);
-
   // Player functions
   virtual bool Configure(unsigned int width, unsigned int height, unsigned int d_width, unsigned int d_height, float fps, unsigned flags, ERenderFormat format, unsigned extended_formatl, unsigned int orientation);
   virtual bool IsConfigured() { return m_bConfigured; }
-  virtual int          GetImage(YV12Image *image, int source = AUTOSOURCE, bool readonly = false);
-  virtual void         ReleaseImage(int source, bool preserve = false);
-  virtual void         FlipPage(int source);
-  virtual unsigned int PreInit();
-  virtual void         UnInit();
-  virtual void         Reset(); /* resets renderer after seek for example */
-  virtual void         Flush();
-  virtual void         ReleaseBuffer(int idx);
-  virtual void         SetBufferSize(int numBuffers) { m_NumYV12Buffers = numBuffers; }
-
-#ifdef HAVE_LIBVDPAU
-  virtual void         AddProcessor(VDPAU::CVdpauRenderPicture* vdpau, int index);
-#endif
-#ifdef HAVE_LIBVA
-  virtual void         AddProcessor(VAAPI::CVaapiRenderPicture* vaapi, int index);
-#endif
-#ifdef TARGET_DARWIN
-  virtual void         AddProcessor(struct __CVBuffer *cvBufferRef, int index);
-#endif
-
+  virtual int GetImage(YV12Image *image, int source = AUTOSOURCE, bool readonly = false);
+  virtual void ReleaseImage(int source, bool preserve = false);
+  virtual void FlipPage(int source);
+  virtual void PreInit();
+  virtual void UnInit();
+  virtual void Reset(); /* resets renderer after seek for example */
+  virtual void Flush();
+  virtual void SetBufferSize(int numBuffers) { m_NumYV12Buffers = numBuffers; }
   virtual void RenderUpdate(bool clear, DWORD flags = 0, DWORD alpha = 255);
+  virtual void Update();
+  virtual void SetupScreenshot() {};
+  virtual bool RenderCapture(CRenderCapture* capture);
+  virtual EINTERLACEMETHOD AutoInterlaceMethod();
+  virtual CRenderInfo GetRenderInfo();
 
   // Feature support
   virtual bool SupportsMultiPassRendering();
@@ -154,14 +140,10 @@ public:
   virtual bool Supports(EINTERLACEMETHOD method);
   virtual bool Supports(ESCALINGMETHOD method);
 
-  virtual EINTERLACEMETHOD AutoInterlaceMethod();
-
-  virtual CRenderInfo GetRenderInfo();
-
 protected:
   virtual void Render(DWORD flags, int renderBuffer);
-  void         ClearBackBuffer();
-  void         DrawBlackBars();
+  void ClearBackBuffer();
+  void DrawBlackBars();
 
   bool ValidateRenderer();
   int  NextYV12Texture();
@@ -171,9 +153,9 @@ protected:
   void UpdateVideoFilter();
 
   // textures
-  bool (CLinuxRendererGL::*m_textureUpload)(int index);
-  void (CLinuxRendererGL::*m_textureDelete)(int index);
-  bool (CLinuxRendererGL::*m_textureCreate)(int index);
+  virtual bool UploadTexture(int index);
+  virtual void DeleteTexture(int index);
+  virtual bool CreateTexture(int index);
 
   bool UploadYV12Texture(int index);
   void DeleteYV12Texture(int index);
@@ -182,22 +164,6 @@ protected:
   bool UploadNV12Texture(int index);
   void DeleteNV12Texture(int index);
   bool CreateNV12Texture(int index);
-  
-  bool UploadVDPAUTexture(int index);
-  void DeleteVDPAUTexture(int index);
-  bool CreateVDPAUTexture(int index);
-
-  bool UploadVDPAUTexture420(int index);
-  void DeleteVDPAUTexture420(int index);
-  bool CreateVDPAUTexture420(int index);
-
-  bool UploadVAAPITexture(int index);
-  void DeleteVAAPITexture(int index);
-  bool CreateVAAPITexture(int index);
-
-  bool UploadCVRefTexture(int index);
-  void DeleteCVRefTexture(int index);
-  bool CreateCVRefTexture(int index);
 
   bool UploadYUV422PackedTexture(int index);
   void DeleteYUV422PackedTexture(int index);
@@ -217,6 +183,10 @@ protected:
   void RenderSoftware(int renderBuffer, int field);   // single pass s/w yuv2rgb renderer
   void RenderRGB(int renderBuffer, int field);      // render using vdpau/vaapi hardware
   void RenderProgressiveWeave(int renderBuffer, int field); // render using vdpau hardware
+
+  // hooks for HwDec Renderered
+  virtual bool LoadShadersHook() { return false; };
+  virtual bool RenderHook(int idx) { return false; };
 
   struct
   {
@@ -274,15 +244,7 @@ protected:
     unsigned  flipindex; /* used to decide if this has been uploaded */
     GLuint    pbo[MAX_PLANES];
 
-#ifdef HAVE_LIBVDPAU
-    VDPAU::CVdpauRenderPicture *vdpau;
-#endif
-#ifdef HAVE_LIBVA
-    VAAPI::CVaapiRenderPicture *vaapi;
-#endif
-#ifdef TARGET_DARWIN_OSX
-    struct __CVBuffer *cvBufferRef;
-#endif
+    void *hwDec;
   };
 
   typedef YUVBUFFER          YUVBUFFERS[NUM_BUFFERS];

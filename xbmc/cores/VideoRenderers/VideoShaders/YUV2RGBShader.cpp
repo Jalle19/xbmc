@@ -94,7 +94,8 @@ void CalculateYUVMatrix(TransformMatrix &matrix
                         , unsigned int  flags
                         , ERenderFormat format
                         , float         black
-                        , float         contrast)
+                        , float         contrast
+                        , bool          limited)
 {
   TransformMatrix coef;
 
@@ -107,8 +108,7 @@ void CalculateYUVMatrix(TransformMatrix &matrix
       coef.m[row][col] = conv[col][row];
   coef.identity = false;
 
-
-  if(g_Windowing.UseLimitedColor())
+  if(g_Windowing.UseLimitedColor() || limited)
   {
     matrix *= TransformMatrix::CreateTranslation(+ 16.0f / 255
                                                , + 16.0f / 255
@@ -148,10 +148,11 @@ static void CalculateYUVMatrixGL(GLfloat      res[4][4]
                                , unsigned int flags
                                , ERenderFormat format
                                , float        black
-                               , float        contrast)
+                               , float        contrast
+                               , bool         limited)
 {
   TransformMatrix matrix;
-  CalculateYUVMatrix(matrix, flags, format, black, contrast);
+  CalculateYUVMatrix(matrix, flags, format, black, contrast, limited);
 
   for(int row = 0; row < 3; row++)
     for(int col = 0; col < 4; col++)
@@ -167,7 +168,8 @@ static void CalculateYUVMatrixGL(GLfloat      res[4][4]
 // BaseYUV2RGBGLSLShader - base class for GLSL YUV2RGB shaders
 //////////////////////////////////////////////////////////////////////
 
-BaseYUV2RGBGLSLShader::BaseYUV2RGBGLSLShader(bool rect, unsigned flags, ERenderFormat format, bool stretch)
+BaseYUV2RGBGLSLShader::BaseYUV2RGBGLSLShader(bool rect, unsigned flags, ERenderFormat format, bool stretch,
+                                             GLSLOutput *output)
 {
   m_width      = 1;
   m_height     = 1;
@@ -204,6 +206,12 @@ BaseYUV2RGBGLSLShader::BaseYUV2RGBGLSLShader(bool rect, unsigned flags, ERenderF
   else
     m_defines += "#define XBMC_STRETCH 0\n";
 
+  // get defines from the output stage if used
+  m_glslOutput = output;
+  if (m_glslOutput) {
+    m_defines += m_glslOutput->GetDefines();
+  }
+
   if (m_format == RENDER_FMT_YUV420P ||
       m_format == RENDER_FMT_YUV420P10 ||
       m_format == RENDER_FMT_YUV420P16)
@@ -216,7 +224,9 @@ BaseYUV2RGBGLSLShader::BaseYUV2RGBGLSLShader(bool rect, unsigned flags, ERenderF
   else if (m_format == RENDER_FMT_UYVY422 || m_format == RENDER_FMT_CVBREF)
     m_defines += "#define XBMC_UYVY\n";
   else if (m_format == RENDER_FMT_VDPAU_420)
-    m_defines += "#define XBMC_VDPAU_NV12\n";
+    m_defines += "#define XBMC_NV12_RRG\n";
+  else if (m_format == RENDER_FMT_VAAPI)
+    m_defines += "#define XBMC_NV12_RRG\n";
   else
     CLog::Log(LOGERROR, "GL: BaseYUV2RGBGLSLShader - unsupported format %d", m_format);
 
@@ -242,6 +252,11 @@ BaseYUV2RGBGLSLShader::BaseYUV2RGBGLSLShader(bool rect, unsigned flags, ERenderF
   CLog::Log(LOGDEBUG, "GL: BaseYUV2RGBGLSLShader: defines:\n%s", m_defines.c_str());
 }
 
+BaseYUV2RGBGLSLShader::~BaseYUV2RGBGLSLShader()
+{
+  delete m_glslOutput;
+}
+
 void BaseYUV2RGBGLSLShader::OnCompiledAndLinked()
 {
 #if HAS_GLES == 2
@@ -260,6 +275,8 @@ void BaseYUV2RGBGLSLShader::OnCompiledAndLinked()
   m_hStretch = glGetUniformLocation(ProgramHandle(), "m_stretch");
   m_hStep    = glGetUniformLocation(ProgramHandle(), "m_step");
   VerifyGLState();
+
+  if (m_glslOutput) m_glslOutput->OnCompiledAndLinked(ProgramHandle());
 }
 
 bool BaseYUV2RGBGLSLShader::OnEnabled()
@@ -272,7 +289,8 @@ bool BaseYUV2RGBGLSLShader::OnEnabled()
   glUniform2f(m_hStep, 1.0 / m_width, 1.0 / m_height);
 
   GLfloat matrix[4][4];
-  CalculateYUVMatrixGL(matrix, m_flags, m_format, m_black, m_contrast);
+  // keep video levels
+  CalculateYUVMatrixGL(matrix, m_flags, m_format, m_black, m_contrast, true);
 
   glUniformMatrix4fv(m_hMatrix, 1, GL_FALSE, (GLfloat*)matrix);
 #if HAS_GLES == 2
@@ -281,9 +299,19 @@ bool BaseYUV2RGBGLSLShader::OnEnabled()
   glUniform1f(m_hAlpha, m_alpha);
 #endif
   VerifyGLState();
+  if (m_glslOutput) m_glslOutput->OnEnabled();
   return true;
 }
 
+void BaseYUV2RGBGLSLShader::OnDisabled()
+{
+  if (m_glslOutput) m_glslOutput->OnDisabled();
+}
+
+void BaseYUV2RGBGLSLShader::Free()
+{
+  if (m_glslOutput) m_glslOutput->Free();
+}
 //////////////////////////////////////////////////////////////////////
 // BaseYUV2RGBGLSLShader - base class for GLSL YUV2RGB shaders
 //////////////////////////////////////////////////////////////////////
@@ -308,11 +336,13 @@ BaseYUV2RGBARBShader::BaseYUV2RGBARBShader(unsigned flags, ERenderFormat format)
 // Use for weave deinterlacing / progressive
 //////////////////////////////////////////////////////////////////////
 
-YUV2RGBProgressiveShader::YUV2RGBProgressiveShader(bool rect, unsigned flags, ERenderFormat format, bool stretch)
-  : BaseYUV2RGBGLSLShader(rect, flags, format, stretch)
+YUV2RGBProgressiveShader::YUV2RGBProgressiveShader(bool rect, unsigned flags, ERenderFormat format, bool stretch,
+                                                   GLSLOutput *output)
+  : BaseYUV2RGBGLSLShader(rect, flags, format, stretch, output)
 {
 #ifdef HAS_GL
   PixelShader()->LoadSource("yuv2rgb_basic.glsl", m_defines);
+  PixelShader()->AppendSource("output.glsl");
 #elif HAS_GLES == 2
   PixelShader()->LoadSource("yuv2rgb_basic_gles.glsl", m_defines);
 #endif
@@ -403,7 +433,7 @@ void YUV2RGBProgressiveShaderARB::OnCompiledAndLinked()
 bool YUV2RGBProgressiveShaderARB::OnEnabled()
 {
   GLfloat matrix[4][4];
-  CalculateYUVMatrixGL(matrix, m_flags, m_format, m_black, m_contrast);
+  CalculateYUVMatrixGL(matrix, m_flags, m_format, m_black, m_contrast, false);
 
   for(int i=0;i<4;i++)
     glProgramLocalParameter4fARB(GL_FRAGMENT_PROGRAM_ARB, i
