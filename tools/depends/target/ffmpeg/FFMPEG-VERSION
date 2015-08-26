@@ -1,5 +1,5 @@
 LIBNAME=ffmpeg
 BASE_URL=https://github.com/fritsch/FFmpeg/archive
-VERSION=2.8.0-Jarvis-hevc1
+VERSION=2.8.0-Jarvis-hevc2
 ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
 
