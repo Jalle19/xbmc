@@ -118,6 +118,12 @@ namespace PVR
     PVR_ADDON_CAPABILITIES GetAddonCapabilities(void) const;
 
     /*!
+     * @brief Query this add-on's tuner properties
+     * @return pTunerProperties the tuner properties
+     */
+    PVR_TUNER_PROPERTIES GetTunerProperties(void) const;
+
+    /*!
      * @brief Get the stream properties of the stream that's currently being read.
      * @param pProperties The properties.
      * @return PVR_ERROR_NO_ERROR if the properties have been fetched successfully.

@@ -552,6 +552,23 @@ PVR_ADDON_CAPABILITIES CPVRClient::GetAddonCapabilities(void) const
   return addonCapabilities;
 }
 
+PVR_TUNER_PROPERTIES CPVRClient::GetTunerProperties(void) const
+{
+  PVR_TUNER_PROPERTIES tunerProperties = {0};
+
+  try
+  {
+    if (m_pStruct->GetTunerProperties(&tunerProperties) != PVR_ERROR_NO_ERROR)
+    {
+      CLog::Log(LOGERROR, "%s - Failed to retrieve tuner properties for add-on '%s'", __FUNCTION__,
+                GetFriendlyName().c_str());
+    }
+  }
+  catch (std::exception &e) { LogException(e, "GetAddonCapabilities()"); }
+
+  return tunerProperties;
+}
+
 const std::string& CPVRClient::GetBackendName(void) const
 {
   return m_strBackendName;

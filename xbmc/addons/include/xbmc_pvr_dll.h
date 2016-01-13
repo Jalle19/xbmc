@@ -77,6 +77,14 @@ extern "C"
   PVR_ERROR GetAddonCapabilities(PVR_ADDON_CAPABILITIES *pCapabilities);
 
   /*!
+   * Populates the specified tuner properties structure
+   * @param pTunerProperties the tuner properties
+   * @return PVR_ERROR_NO_ERROR if the properties were fetched successfully
+   * @remarks valid implementation required
+   */
+  PVR_ERROR GetTunerProperties(PVR_TUNER_PROPERTIES *pTunerProperties);
+
+  /*!
    * @return The name reported by the backend that will be displayed in the UI.
    * @remarks Valid implementation required.
    */
@@ -645,6 +653,7 @@ extern "C"
     pClient->GetGUIAPIVersion               = GetGUIAPIVersion;
     pClient->GetMininumGUIAPIVersion        = GetMininumGUIAPIVersion;
     pClient->GetAddonCapabilities           = GetAddonCapabilities;
+    pClient->GetTunerProperties             = GetTunerProperties;
     pClient->GetStreamProperties            = GetStreamProperties;
     pClient->GetConnectionString            = GetConnectionString;
     pClient->GetBackendName                 = GetBackendName;

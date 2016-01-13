@@ -77,10 +77,10 @@ struct DemuxPacket;
 #define PVR_STREAM_MAX_STREAMS 20
 
 /* current PVR API version */
-#define XBMC_PVR_API_VERSION "4.1.0"
+#define XBMC_PVR_API_VERSION "5.0.0"
 
 /* min. PVR API version */
-#define XBMC_PVR_MIN_API_VERSION "4.1.0"
+#define XBMC_PVR_MIN_API_VERSION "5.0.0"
 
 #ifdef __cplusplus
 extern "C" {
@@ -156,6 +156,23 @@ extern "C" {
   const unsigned int PVR_WEEKDAY_ALLDAYS   = PVR_WEEKDAY_MONDAY   | PVR_WEEKDAY_TUESDAY | PVR_WEEKDAY_WEDNESDAY |
                                              PVR_WEEKDAY_THURSDAY | PVR_WEEKDAY_FRIDAY  | PVR_WEEKDAY_SATURDAY  |
                                              PVR_WEEKDAY_SUNDAY;
+
+  /*!
+   * @brief the size of the "tuners" array in PVR_TUNER_PROPERTIES
+   */
+  const unsigned int PVR_TUNER_MAX_TUNERS = 32;
+
+  /*!
+   * @brief delivery system types
+   */
+  typedef enum {
+    PVR_DELIVERY_SYSTEM_UNKNOWN = -1,
+    PVR_DELIVERY_SYSTEM_DVBT = 0,
+    PVR_DELIVERY_SYSTEM_DVBC = 1,
+    PVR_DELIVERY_SYSTEM_DVBS = 2,
+    PVR_DELIVERY_SYSTEM_ATSC = 3,
+    PVR_DELIVERY_SYSTEM_IPTV = 4,
+  } PVR_DELIVERY_SYSTEM;
 
   /*!
    * @brief PVR add-on error codes
@@ -236,6 +253,19 @@ extern "C" {
     bool bSupportsLastPlayedPosition;   /*!< @brief true if the backend supports store/retrieve of last played position for recordings. */
     bool bSupportsRecordingEdl;         /*!< @brief true if the backend supports retrieving an edit decision list for recordings. */
   } ATTRIBUTE_PACKED PVR_ADDON_CAPABILITIES;
+
+  /*!
+   * @brief tuner properties
+   */
+  typedef struct PVR_TUNER_PROPERTIES
+  {
+    int iNumTuners;                         /*!< @brief the number of tuners the backend has */
+    int activeTuners[PVR_TUNER_MAX_TUNERS]; /*!< @brief which tuners are in use at the moment */
+    struct PVR_TUNER
+    {
+      PVR_DELIVERY_SYSTEM deliverySystem;   /*!< @brief the delivery system used */
+    } tuners[PVR_TUNER_MAX_TUNERS];         /*!< @brief information about each tuner */
+  } ATTRIBUTE_PACKED PVR_TUNER_PROPERTIES;
 
   /*!
    * @brief PVR stream properties
@@ -501,6 +531,7 @@ extern "C" {
     const char*  (__cdecl* GetGUIAPIVersion)(void);
     const char*  (__cdecl* GetMininumGUIAPIVersion)(void);
     PVR_ERROR    (__cdecl* GetAddonCapabilities)(PVR_ADDON_CAPABILITIES*);
+    PVR_ERROR    (__cdecl* GetTunerProperties)(PVR_TUNER_PROPERTIES*);
     PVR_ERROR    (__cdecl* GetStreamProperties)(PVR_STREAM_PROPERTIES*);
     const char*  (__cdecl* GetBackendName)(void);
     const char*  (__cdecl* GetBackendVersion)(void);

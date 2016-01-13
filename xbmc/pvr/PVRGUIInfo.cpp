@@ -231,6 +231,17 @@ void CPVRGUIInfo::Process(void)
       UpdateNextTimer();
     Sleep(0);
 
+    if (!m_bStop)
+    {
+      PVR_CLIENT client;
+
+      if (g_PVRClients->GetPlayingClient(client)) {
+        PVR_TUNER_PROPERTIES properties = client->GetTunerProperties();
+        CLog::Log(LOGDEBUG, "FOOBAR Properties: %d tuners", properties.iNumTuners);
+      }
+    }
+    Sleep(0);
+
     // Update the backend cache every toggleInterval seconds
     if (!m_bStop && mLoop % toggleInterval == 0)
       UpdateBackendCache();
